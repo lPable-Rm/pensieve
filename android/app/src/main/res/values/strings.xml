@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Pensieve</string>
+    <string name="new_reminder">Nueva nota</string>
+    <string name="create_reminder_by_voice">Crear nota por voz</string>
+    <string name="complete_reminder">Completar recordatorio: %1$s</string>
+    <string name="reminder_completed">Recordatorio completado</string>
+    <string name="undo">Deshacer</string>
+    <string name="new_reminder_placeholder">Escribe un recordatorio</string>
+    <string name="save_reminder">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="created_just_now">Ahora</string>
 </resources>
