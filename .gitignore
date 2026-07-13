@@ -1,0 +1,38 @@
+﻿# Android Studio
+**/.idea/
+*.iml
+
+# Gradle y compilaciones
+**/.gradle/
+**/build/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# Configuración local
+**/local.properties
+
+# Android Native
+**/.externalNativeBuild/
+**/.cxx/
+
+# Capturas y archivos temporales
+**/captures/
+*.log
+*.tmp
+
+# Claves y secretos
+*.jks
+*.keystore
+keystore.properties
+secrets.properties
+.env
+.env.*
+google-services.json
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
