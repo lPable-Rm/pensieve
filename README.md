@@ -14,14 +14,16 @@ La idea central es sencilla: crear una nota por texto o voz, verla como recordat
 
 ## Estado actual
 
-La interfaz principal ya permite, de forma temporal y solo en memoria:
+La aplicación se encuentra en la **Fase 3 — Persistencia local**. Actualmente permite:
 
 - Crear una nota manual.
 - Completar una nota con una animación breve.
 - Reordenar la lista automáticamente.
 - Deshacer una finalización mediante un snackbar.
+- Guardar y observar las notas con Room en la base de datos privada de la aplicación.
+- Recuperar las notas almacenadas al volver a abrir la aplicación.
 
-La persistencia local con Room, las notificaciones y la captura por voz todavía están pendientes.
+Las notificaciones persistentes, la captura por voz y el widget pertenecen a las siguientes fases.
 
 ## Tecnología
 
@@ -52,8 +54,13 @@ cd android
 ```text
 android/app/src/main/java/com/mvppostit/pensieve/
 ├── MainActivity.kt
+├── PensieveApplication.kt
+├── AppContainer.kt
+├── data/
+│   ├── local/
+│   └── repository/
+├── reminders/
 └── ui/home/
-    └── HomeScreen.kt
 ```
 
 Las referencias visuales y de flujo están en `diseño/`. Son material de consulta y no deben modificarse.

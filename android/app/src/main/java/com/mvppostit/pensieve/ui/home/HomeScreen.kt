@@ -29,9 +29,6 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,13 +36,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -67,9 +58,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import com.mvppostit.pensieve.R
+import com.mvppostit.pensieve.data.local.ReminderEntity
 import com.mvppostit.pensieve.ui.theme.PensieveTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.util.Date
 
 // Colores temporales de la primera versión visual. Las paletas configurables
 // se incorporarán en la Fase 8, por eso todavía viven cerca de la pantalla.
@@ -79,128 +71,24 @@ private val PrimaryLightColor = Color(0xFFEDE9FF)
 private val TextColor = Color(0xFF172033)
 private val SecondaryTextColor = Color(0xFF667085)
 
-// Debe ser lo bastante breve para que completar siga siendo inmediato, pero visible.
-private const val CompletionAnimationDurationMillis = 180
-
-// Modelo visual mínimo para la Fase 2. Más adelante Room aportará los datos reales.
-private data class SampleReminder(
-    val id: Int,
-    val text: String,
-    val createdAtLabel: String,
-)
-
-// Datos de prueba ordenados de la nota más reciente a la más antigua.
-// La persistencia real llegará en la Fase 3.
-private val sampleReminders = listOf(
-    SampleReminder(
-        id = 4,
-        text = "Comprar tornillos, cinta aislante y una bombilla para arreglar la lámpara del pasillo",
-        createdAtLabel = "Hoy, 09:35",
-    ),
-    SampleReminder(3, "Recoger a los niños a las cinco", "Hoy, 09:20"),
-    SampleReminder(2, "Llamar al dentista", "Ayer, 18:45"),
-    SampleReminder(1, "Enviar el informe", "Ayer, 17:20"),
-)
-
 /**
  * Única pantalla principal de Pensieve.
  *
- * Durante la Fase 2 guarda sus recordatorios solo en memoria. Los callbacks
- * permiten que en fases posteriores la actividad o un ViewModel conecten las
- * acciones con la persistencia y las notificaciones, sin cambiar los componentes visuales.
+ * Recibe un estado inmutable y callbacks desde HomeRoute. De este modo no
+ * conoce Room ni modifica directamente la fuente persistente de recordatorios.
  */
 @Composable
 fun HomeScreen(
-    snackbarHostState: SnackbarHostState,
+    uiState: HomeUiState,
     modifier: Modifier = Modifier,
     onNewNoteClick: () -> Unit = {},
     onVoiceNoteClick: () -> Unit = {},
-    onCompleteReminderClick: (Int) -> Unit = {},
+    onManualReminderTextChange: (String) -> Unit = {},
+    onCreateManualReminder: () -> Unit = {},
+    onCancelManualReminder: () -> Unit = {},
+    onCompleteReminderClick: (Long) -> Unit = {},
 ) {
-    // remember conserva la misma lista durante las recomposiciones: por ejemplo,
-    // cuando eliminamos una tarjeta. No sobrevive al cierre de la app ni a recrear
-    // la actividad; Room sustituirá este estado temporal en la Fase 3.
-    //
-    // toMutableStateList crea una lista observable. Compose detecta add/remove
-    // y actualiza automáticamente las partes de la interfaz que dependen de ella.
-    val reminders = remember { sampleReminders.toMutableStateList() }
-
-    // Las operaciones de completar combinan una espera corta de animación y un snackbar.
-    // El scope se cancela automáticamente cuando HomeScreen sale de composición.
-    val screenScope = rememberCoroutineScope()
-    val completedMessage = stringResource(R.string.reminder_completed)
-    val undoLabel = stringResource(R.string.undo)
     val justNowLabel = stringResource(R.string.created_just_now)
-
-    // El campo de texto solo existe mientras el usuario crea una nota. En el estado
-    // normal no ocupamos espacio con una entrada vacía, como requiere el flujo del MVP.
-    var isManualInputVisible by remember { mutableStateOf(false) }
-    var manualReminderText by remember { mutableStateOf("") }
-    var nextReminderId by remember {
-        mutableStateOf(sampleReminders.maxOf { reminder -> reminder.id } + 1)
-    }
-    val completingReminderIds = remember { mutableStateListOf<Int>() }
-
-    fun saveManualReminder() {
-        val reminderText = manualReminderText.trim()
-
-        // El botón se desactiva para texto vacío, pero esta comprobación también protege
-        // la acción "Hecho" del teclado.
-        if (reminderText.isEmpty()) return
-
-        // Insertar en el índice 0 conserva el orden de más reciente a más antigua.
-        reminders.add(
-            index = 0,
-            element = SampleReminder(
-                id = nextReminderId,
-                text = reminderText,
-                createdAtLabel = justNowLabel,
-            ),
-        )
-        nextReminderId += 1
-        manualReminderText = ""
-        isManualInputVisible = false
-    }
-
-    fun completeReminder(reminder: SampleReminder) {
-        // Evita programar dos eliminaciones si el usuario toca dos veces el mismo círculo.
-        if (reminder.id in completingReminderIds) return
-
-        // AnimatedVisibility observa este estado. Primero reproduce la salida y,
-        // cuando termina, eliminamos el dato que alimenta a LazyColumn.
-        completingReminderIds.add(reminder.id)
-
-        screenScope.launch {
-            delay(CompletionAnimationDurationMillis.toLong())
-
-            val removedIndex = reminders.indexOf(reminder)
-            if (removedIndex == -1) {
-                completingReminderIds.remove(reminder.id)
-                return@launch
-            }
-
-            reminders.removeAt(removedIndex)
-            completingReminderIds.remove(reminder.id)
-
-            // En esta fase no tiene efecto; después eliminará la nota de Room
-            // y retirará su notificación persistente.
-            onCompleteReminderClick(reminder.id)
-
-            val snackbarResult = snackbarHostState.showSnackbar(
-                message = completedMessage,
-                actionLabel = undoLabel,
-                duration = SnackbarDuration.Long,
-            )
-
-            if (snackbarResult == SnackbarResult.ActionPerformed) {
-                // Si se completaron más notas mientras el snackbar estaba visible,
-                // la lista puede ser más corta. Ajustamos el índice para restaurar
-                // sin salir de sus límites.
-                val restoreIndex = removedIndex.coerceAtMost(reminders.size)
-                reminders.add(restoreIndex, reminder)
-            }
-        }
-    }
 
     Column(
         modifier = modifier
@@ -226,11 +114,11 @@ fun HomeScreen(
             // La clave estable permite a Compose identificar cada tarjeta al eliminarla
             // o reordenarla, en lugar de confundirla con otra posición de la lista.
             items(
-                items = reminders,
+                items = uiState.reminders,
                 key = { reminder -> reminder.id },
             ) { reminder ->
                 AnimatedVisibility(
-                    visible = reminder.id !in completingReminderIds,
+                    visible = reminder.id !in uiState.completingReminderIds,
                     exit = fadeOut(
                         animationSpec = tween(CompletionAnimationDurationMillis),
                     ) + shrinkVertically(
@@ -239,22 +127,23 @@ fun HomeScreen(
                 ) {
                     ReminderCard(
                         text = reminder.text,
-                        createdAtLabel = reminder.createdAtLabel,
-                        onCompleteClick = { completeReminder(reminder) },
+                        createdAtLabel = formatCreatedAtLabel(
+                            createdAtMillis = reminder.createdAtMillis,
+                            justNowLabel = justNowLabel,
+                        ),
+                        onCompleteClick = { onCompleteReminderClick(reminder.id) },
                     )
                 }
             }
         }
 
-        if (isManualInputVisible) {
+        if (uiState.isManualInputVisible) {
             ManualReminderInput(
-                text = manualReminderText,
-                onTextChange = { newText -> manualReminderText = newText },
-                onSave = ::saveManualReminder,
-                onCancel = {
-                    manualReminderText = ""
-                    isManualInputVisible = false
-                },
+                text = uiState.manualReminderText,
+                isSaving = uiState.isCreatingReminder,
+                onTextChange = onManualReminderTextChange,
+                onSave = onCreateManualReminder,
+                onCancel = onCancelManualReminder,
                 modifier = Modifier
                     .fillMaxWidth()
                     .imePadding()
@@ -263,13 +152,19 @@ fun HomeScreen(
         }
 
         HomeActions(
-            onNewNoteClick = {
-                isManualInputVisible = true
-                onNewNoteClick()
-            },
+            onNewNoteClick = onNewNoteClick,
             onVoiceNoteClick = onVoiceNoteClick,
         )
     }
+}
+
+/** Convierte la fecha almacenada en texto de interfaz sin modificar el dato original. */
+private fun formatCreatedAtLabel(createdAtMillis: Long, justNowLabel: String): String {
+    val isLessThanOneMinuteOld = createdAtMillis >= System.currentTimeMillis() - 60_000
+    if (isLessThanOneMinuteOld) return justNowLabel
+
+    return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+        .format(Date(createdAtMillis))
 }
 
 /**
@@ -281,6 +176,7 @@ fun HomeScreen(
 @Composable
 private fun ManualReminderInput(
     text: String,
+    isSaving: Boolean,
     onTextChange: (String) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit,
@@ -288,7 +184,7 @@ private fun ManualReminderInput(
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isSaveEnabled = text.trim().isNotEmpty()
+    val isSaveEnabled = text.trim().isNotEmpty() && !isSaving
 
     // LaunchedEffect se ejecuta después de que el TextField entre en la composición.
     // En ese momento puede recibir foco y abrir el teclado sin que el usuario toque otra vez.
@@ -297,9 +193,8 @@ private fun ManualReminderInput(
         keyboardController?.show()
     }
 
-    fun saveAndHideKeyboard() {
+    fun saveReminder() {
         if (isSaveEnabled) {
-            keyboardController?.hide()
             onSave()
         }
     }
@@ -314,6 +209,7 @@ private fun ManualReminderInput(
             TextField(
                 value = text,
                 onValueChange = onTextChange,
+                enabled = !isSaving,
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
@@ -326,7 +222,7 @@ private fun ManualReminderInput(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done,
                 ),
-                keyboardActions = KeyboardActions(onDone = { saveAndHideKeyboard() }),
+                keyboardActions = KeyboardActions(onDone = { saveReminder() }),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = PrimaryLightColor,
                     unfocusedContainerColor = PrimaryLightColor,
@@ -342,6 +238,7 @@ private fun ManualReminderInput(
                 horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(
+                    enabled = !isSaving,
                     onClick = {
                         keyboardController?.hide()
                         onCancel()
@@ -351,7 +248,7 @@ private fun ManualReminderInput(
                 }
 
                 FilledTonalButton(
-                    onClick = ::saveAndHideKeyboard,
+                    onClick = ::saveReminder,
                     enabled = isSaveEnabled,
                 ) {
                     Text(text = stringResource(R.string.save_reminder))
@@ -521,6 +418,20 @@ private fun HomeActions(
     }
 }
 
+// Datos exclusivos de los previews: la aplicación real siempre recibe Room.
+private val previewReminders = listOf(
+    ReminderEntity(
+        id = 1,
+        text = "Comprar tornillos, cinta aislante y una bombilla para arreglar la lámpara del pasillo",
+        createdAtMillis = System.currentTimeMillis(),
+    ),
+    ReminderEntity(
+        id = 2,
+        text = "Recoger a los niños a las cinco",
+        createdAtMillis = System.currentTimeMillis() - 3_600_000,
+    ),
+)
+
 // Los previews permiten comprobar la composición en Android Studio sin iniciar el emulador.
 @Preview(
     name = "Pantalla principal",
@@ -531,9 +442,7 @@ private fun HomeActions(
 @Composable
 private fun HomeScreenPreview() {
     PensieveTheme {
-        // El preview no usa MainActivity, así que crea su propio estado de snackbar.
-        val snackbarHostState = remember { SnackbarHostState() }
-        HomeScreen(snackbarHostState = snackbarHostState)
+        HomeScreen(uiState = HomeUiState(reminders = previewReminders))
     }
 }
 
@@ -548,7 +457,6 @@ private fun HomeScreenPreview() {
 @Composable
 private fun HomeScreenLargeTextPreview() {
     PensieveTheme {
-        val snackbarHostState = remember { SnackbarHostState() }
-        HomeScreen(snackbarHostState = snackbarHostState)
+        HomeScreen(uiState = HomeUiState(reminders = previewReminders))
     }
 }

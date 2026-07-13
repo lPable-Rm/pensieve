@@ -9,4 +9,8 @@
     <string name="save_reminder">Guardar</string>
     <string name="cancel">Cancelar</string>
     <string name="created_just_now">Ahora</string>
+    <string name="reminder_load_failed">No se pudieron cargar las notas</string>
+    <string name="reminder_create_failed">No se pudo guardar la nota</string>
+    <string name="reminder_complete_failed">No se pudo completar la nota</string>
+    <string name="reminder_restore_failed">No se pudo deshacer la acción</string>
 </resources>

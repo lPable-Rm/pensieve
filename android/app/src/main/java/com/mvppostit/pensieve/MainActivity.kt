@@ -11,7 +11,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.mvppostit.pensieve.ui.home.HomeScreen
+import com.mvppostit.pensieve.ui.home.HomeRoute
 import com.mvppostit.pensieve.ui.theme.PensieveTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,6 +20,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+
+        // La Application conserva las dependencias durante todo el proceso.
+        // MainActivity solo entrega a la ruta la dependencia que esta necesita.
+        val reminderManager = (application as PensieveApplication)
+            .appContainer
+            .reminderManager
 
         setContent {
             PensieveTheme {
@@ -35,7 +41,8 @@ class MainActivity : ComponentActivity() {
                         SnackbarHost(hostState = snackbarHostState)
                     },
                 ) { innerPadding ->
-                    HomeScreen(
+                    HomeRoute(
+                        reminderManager = reminderManager,
                         snackbarHostState = snackbarHostState,
                         modifier = Modifier.padding(innerPadding),
                     )

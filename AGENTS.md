@@ -283,7 +283,7 @@ Estado: completada.
 - Botones inferiores.
 - Diseño basado en las referencias de `diseño/`.
 
-Estado: en curso.
+Estado: completada.
 
 ### Fase 2 — Interacciones en memoria
 
@@ -292,12 +292,16 @@ Estado: en curso.
 - Reordenar la lista.
 - Snackbar con deshacer.
 
+Estado: completada.
+
 ### Fase 3 — Persistencia local
 
 - Room.
 - Entidad y DAO.
 - Repositorio.
 - Restauración de notas al reiniciar.
+
+Estado: en curso.
 
 ### Fase 4 — Notificaciones
 
@@ -353,14 +357,21 @@ Estado: en curso.
 ## Estado actual relevante
 
 La aplicación ya compila y se ha ejecutado en un emulador Android API 36.1.
+Las fases 1 y 2 están completadas y la fase 3 está en curso. El bloque actual
+conecta la pantalla con Room mediante un ViewModel, un repositorio y un
+contenedor de dependencias manual.
 
-Archivo actual de trabajo:
+Archivos principales del bloque actual:
 
 ```text
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeScreen.kt
+android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeViewModel.kt
+android/app/src/main/java/com/mvppostit/pensieve/data/local/
+android/app/src/main/java/com/mvppostit/pensieve/data/repository/
 ```
 
-La pantalla contiene una cabecera y se está incorporando la primera tarjeta estática. Antes de continuar con nuevas funciones, corregir cualquier error sintáctico existente y verificar la compilación.
+Antes de continuar con notificaciones, validar la persistencia, la restauración
+y el flujo de completar/deshacer, y mantener el esquema Room exportado.
 
 ## Referencias de diseño
 
