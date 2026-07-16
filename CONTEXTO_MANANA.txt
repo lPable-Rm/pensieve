@@ -1,26 +1,42 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 13 de julio de 2026
+Fecha: 16 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
-- La rama main está limpia y subida a GitHub.
-- Último commit: fcc1235 — Implementar persistencia local con Room.
+- Fase 4 (notificaciones) está implementada y validada manualmente.
+- Hay cambios de la fase 4 sin confirmar en Git.
 
-Qué incluye la Fase 3
-- Room con entidad, DAO, repositorio y esquema v1 exportado.
-- HomeRoute, HomeViewModel y contenedor manual de dependencias.
-- Crear, completar y deshacer operan sobre la base local.
-- Las notas sobreviven al cierre y reapertura de la aplicación.
-- Pruebas instrumentadas para DAO, persistencia y errores del ViewModel.
-- Copias de seguridad desactivadas/excluidas para proteger las notas locales.
+Qué incluye la Fase 4
+- Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
+  una nota en Android 13 o superior.
+- Si el permiso se rechaza, el borrador permanece visible y se explica mediante
+  un snackbar que las notificaciones mantienen el recordatorio visible.
+- Canal silencioso «Recordatorios activos» creado al iniciar la aplicación.
+- Icono monocromo específico para las notificaciones.
+- Una notificación por cada nota activa, coordinada desde ReminderManager tras
+  actualizar Room, que continúa siendo la fuente de verdad.
+- Completar una nota desde la app retira su notificación; Deshacer la publica
+  de nuevo.
+- Tocar el cuerpo de la notificación abre Pensieve mediante un PendingIntent
+  explícito e inmutable, sin completar la nota.
+- La acción «Hecho» usa CompleteReminderReceiver, no abre la interfaz, elimina
+  la nota de Room y retira su notificación.
+- El receptor está marcado como no exportado en el Manifest.
+- Se han validado los flujos de crear, completar, deshacer, abrir la app,
+  completar desde la notificación y conceder el permiso.
+- :app:assembleDebug y lintDebug terminan correctamente.
 
-Siguiente objetivo: Fase 4 — Notificaciones
-- Crear el canal de notificaciones.
-- Publicar una notificación por nota activa.
-- Añadir la acción «Hecho» sin abrir la aplicación.
-- Abrir la app al pulsar el cuerpo de la notificación.
+Pendiente para la Fase 7
+- Si el usuario descarta una notificación al deslizarla, todavía no se vuelve a
+  publicar. La reconciliación al abrir la app, tras reiniciar y con WorkManager
+  corresponde a esa fase.
 
-Antes de implementar, revisar AGENTS.md y los archivos actuales de datos,
-HomeViewModel y HomeRoute. Mantener Room como fuente de verdad y no añadir
-dependencias sin explicarlas y pedir aprobación.
+Siguiente objetivo: Fase 5 — Captura por voz
+- Pedir el permiso de micrófono solo al iniciar una captura por voz.
+- Usar SpeechRecognizer con reconocimiento en el dispositivo cuando exista.
+- Mostrar transcripción parcial y revisión compacta antes de guardar.
+- No almacenar audio ni añadir dependencias sin explicarlas y pedir aprobación.
+
+Antes de continuar, revisar AGENTS.md y los archivos actuales relacionados con
+la entrada manual, HomeViewModel, ReminderManager y las notificaciones.

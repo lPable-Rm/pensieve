@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.mvppostit.pensieve.data.local.PensieveDatabase
 import com.mvppostit.pensieve.data.repository.ReminderRepository
+import com.mvppostit.pensieve.notifications.ReminderNotificationPublisher
 import com.mvppostit.pensieve.reminders.ReminderManager
 
 /**
@@ -23,8 +24,15 @@ class AppContainer(context: Context) {
 
     private val reminderRepository = ReminderRepository(database.reminderDao())
 
+    // Usa el contexto de aplicación porque este objeto vive mientras Pensieve esté activa.
+    private val reminderNotificationPublisher =
+        ReminderNotificationPublisher(context.applicationContext)
+
     /** Dependencia de alto nivel que podrán usar pantalla, voz o widget. */
-    val reminderManager = ReminderManager(reminderRepository)
+    val reminderManager = ReminderManager(
+        repository = reminderRepository,
+        notificationPublisher = reminderNotificationPublisher,
+    )
 
     private companion object {
         const val DATABASE_NAME = "pensieve.db"

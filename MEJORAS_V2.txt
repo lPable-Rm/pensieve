@@ -15,3 +15,18 @@ Motivo: puede ayudar a no olvidar recados especialmente importantes.
 Pendiente de diseñar: configuración sencilla, comportamiento cuando el teléfono
 está en modo silencioso, consumo de batería y compatibilidad con las restricciones
 de alarmas en segundo plano de Android.
+
+## Notificaciones no descartables
+
+Valorar un modo opcional en el que una notificación de recordatorio no pueda
+eliminarse al deslizarla. Solo desaparecería al pulsar Hecho desde la propia
+notificación o al completar la nota dentro de Pensieve.
+
+Posible implementación: usar `setOngoing(true)` al construir la notificación.
+
+Motivo: refuerza la visibilidad persistente para quien prefiera no poder ocultar
+un recordatorio pendiente por accidente.
+
+Pendiente de decidir: si este comportamiento resulta demasiado invasivo, cómo
+presentarlo como una opción sencilla y cómo conviviría con la reconciliación de
+notificaciones descartadas prevista para el MVP.

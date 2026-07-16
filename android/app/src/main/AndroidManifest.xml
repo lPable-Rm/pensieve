@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Android 13+: permite mostrar recordatorios tras el consentimiento del usuario. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".PensieveApplication"
@@ -23,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Solo los PendingIntent creados por Pensieve pueden completar una nota. -->
+        <receiver
+            android:name=".notifications.CompleteReminderReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
