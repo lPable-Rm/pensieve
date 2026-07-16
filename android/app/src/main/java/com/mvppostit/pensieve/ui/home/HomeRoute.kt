@@ -1,9 +1,6 @@
 package com.mvppostit.pensieve.ui.home
 
 import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.SnackbarDuration
@@ -20,14 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mvppostit.pensieve.R
+import com.mvppostit.pensieve.notifications.canPostReminderNotifications
+import com.mvppostit.pensieve.notifications.hasReminderNotificationPermission
 import com.mvppostit.pensieve.reminders.ReminderManager
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-// Material solo ofrece duraciones predefinidas. Esta es la duración concreta
-// acordada para que Deshacer esté disponible, pero no frene el flujo principal.
-private const val UndoSnackbarDurationMillis = 2_000L
 
 /**
  * Conecta la pantalla visual con Android y con HomeViewModel.
@@ -60,22 +53,26 @@ fun HomeRoute(
     val notificationPermissionDeniedMessage =
         stringResource(R.string.notification_permission_denied)
 
+    fun showNotificationUnavailableMessage() {
+        coroutineScope.launch {
+            snackbarHostState.showSnackbar(
+                message = notificationPermissionDeniedMessage,
+                duration = SnackbarDuration.Long,
+            )
+        }
+    }
+
     // El launcher debe recordarse entre recomposiciones. Tras conceder el
     // permiso retomamos la acción original de guardar la nota.
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { permissionGranted ->
-        if (permissionGranted) {
+        if (permissionGranted && context.canPostReminderNotifications()) {
             viewModel.createManualReminder()
         } else {
             // El borrador se conserva en HomeViewModel para que la persona no
             // pierda lo que ha escrito y pueda decidir qué hacer después.
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = notificationPermissionDeniedMessage,
-                    duration = SnackbarDuration.Long,
-                )
-            }
+            showNotificationUnavailableMessage()
         }
     }
 
@@ -116,9 +113,10 @@ fun HomeRoute(
         val reminder = pendingUndoReminder ?: return@LaunchedEffect
 
         when (
-            snackbarHostState.showUndoSnackbar(
+            snackbarHostState.showSnackbar(
                 message = completedMessage,
                 actionLabel = undoLabel,
+                duration = SnackbarDuration.Short,
             )
         ) {
             SnackbarResult.ActionPerformed -> viewModel.undoCompletion(reminder)
@@ -134,49 +132,17 @@ fun HomeRoute(
         onCreateManualReminder = {
             // Pedimos el permiso solo cuando una nota ya está lista para
             // guardarse, no al abrir Pensieve ni al mostrar el campo de texto.
-            if (context.hasNotificationPermission()) {
-                viewModel.createManualReminder()
-            } else {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            when {
+                context.canPostReminderNotifications() -> viewModel.createManualReminder()
+                !context.hasReminderNotificationPermission() -> {
+                    notificationPermissionLauncher.launch(
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    )
+                }
+                else -> showNotificationUnavailableMessage()
             }
         },
         onCancelManualReminder = viewModel::cancelManualReminder,
         onCompleteReminderClick = viewModel::completeReminder,
     )
-}
-
-/**
- * Desde Android 13 las notificaciones requieren consentimiento en tiempo de
- * ejecución. En Android 12L y anteriores se consideran concedidas al instalar.
- */
-private fun Context.hasNotificationPermission(): Boolean =
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-        checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED
-
-/**
- * Muestra un snackbar de deshacer durante una duración exacta.
- *
- * Usamos [SnackbarDuration.Indefinite] para que Material no aplique sus
- * duraciones fijas. La corrutina hija lo descarta a los dos segundos; si la
- * persona pulsa Deshacer antes, showSnackbar termina y cancela esa corrutina.
- */
-private suspend fun SnackbarHostState.showUndoSnackbar(
-    message: String,
-    actionLabel: String,
-): SnackbarResult = coroutineScope {
-    val dismissJob = launch {
-        delay(UndoSnackbarDurationMillis)
-        currentSnackbarData?.dismiss()
-    }
-
-    try {
-        showSnackbar(
-            message = message,
-            actionLabel = actionLabel,
-            duration = SnackbarDuration.Indefinite,
-        )
-    } finally {
-        dismissJob.cancel()
-    }
 }

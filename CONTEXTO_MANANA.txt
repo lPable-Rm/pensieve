@@ -4,13 +4,16 @@ Fecha: 16 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
-- Fase 4 (notificaciones) está implementada y validada manualmente.
+- Fase 4 (notificaciones) está implementada y validada manualmente y con
+  pruebas automatizadas en Android API 36.1.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
   una nota en Android 13 o superior.
 - Si el permiso se rechaza, el borrador permanece visible y se explica mediante
   un snackbar que las notificaciones mantienen el recordatorio visible.
+- La comprobación compartida incluye la guarda explícita para API 31/32 y
+  también detecta si la app o el canal han sido bloqueados en los ajustes.
 - Canal silencioso «Recordatorios activos» creado al iniciar la aplicación.
 - Icono monocromo específico para las notificaciones.
 - Una notificación por cada nota activa, coordinada desde ReminderManager tras
@@ -21,10 +24,19 @@ Qué incluye la Fase 4
   explícito e inmutable, sin completar la nota.
 - La acción «Hecho» usa CompleteReminderReceiver, no abre la interfaz, elimina
   la nota de Room y retira su notificación.
+- La cancelación es idempotente: también limpia una notificación huérfana si su
+  fila de Room ya no existe.
+- El receptor valida el identificador, contiene los fallos y siempre finaliza
+  el trabajo asíncrono sin registrar el texto de la nota.
+- El snackbar de Deshacer usa la duración estándar de Material para evitar
+  carreras cuando hay otro mensaje en cola.
 - El receptor está marcado como no exportado en el Manifest.
 - Se han validado los flujos de crear, completar, deshacer, abrir la app,
   completar desde la notificación y conceder el permiso.
-- :app:assembleDebug y lintDebug terminan correctamente.
+- Hay pruebas locales del orden Room/notificación y pruebas instrumentadas del
+  canal, los PendingIntent, la acción «Hecho» y el flujo integral con Room.
+- :app:compileDebugKotlin, testDebugUnitTest, connectedDebugAndroidTest,
+  :app:assembleDebug y lintDebug terminan correctamente.
 
 Pendiente para la Fase 7
 - Si el usuario descarta una notificación al deslizarla, todavía no se vuelve a

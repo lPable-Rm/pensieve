@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.mvppostit.pensieve.data.local.ReminderDao
 import com.mvppostit.pensieve.data.local.ReminderEntity
 import com.mvppostit.pensieve.data.repository.ReminderRepository
+import com.mvppostit.pensieve.notifications.ReminderNotifier
 import com.mvppostit.pensieve.reminders.ReminderManager
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
@@ -201,12 +202,21 @@ class HomeViewModelErrorTest {
     private fun createViewModel(reminderDao: ReminderDao): HomeViewModel {
         val store = ViewModelStore()
         viewModelStores += store
-        val manager = ReminderManager(ReminderRepository(reminderDao))
+        val manager = ReminderManager(
+            repository = ReminderRepository(reminderDao),
+            notificationPublisher = NoOpReminderNotifier,
+        )
 
         return ViewModelProvider(
             store,
             HomeViewModelFactory(manager),
         )[HomeViewModel::class.java]
+    }
+
+    private object NoOpReminderNotifier : ReminderNotifier {
+        override fun publish(reminder: ReminderEntity) = Unit
+
+        override fun cancel(reminderId: Long) = Unit
     }
 
     private class FakeReminderDao(

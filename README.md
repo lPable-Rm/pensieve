@@ -14,7 +14,7 @@ La idea central es sencilla: crear una nota por texto o voz, verla como recordat
 
 ## Estado actual
 
-La aplicación se encuentra en la **Fase 3 — Persistencia local**. Actualmente permite:
+La aplicación ha completado la **Fase 4 — Notificaciones**. Actualmente permite:
 
 - Crear una nota manual.
 - Completar una nota con una animación breve.
@@ -22,8 +22,11 @@ La aplicación se encuentra en la **Fase 3 — Persistencia local**. Actualmente
 - Deshacer una finalización mediante un snackbar.
 - Guardar y observar las notas con Room en la base de datos privada de la aplicación.
 - Recuperar las notas almacenadas al volver a abrir la aplicación.
+- Publicar una notificación por cada nota activa.
+- Abrir Pensieve al tocar el cuerpo de una notificación.
+- Completar una nota desde la acción **Hecho** sin abrir la interfaz.
 
-Las notificaciones persistentes, la captura por voz y el widget pertenecen a las siguientes fases.
+La captura por voz, el widget y la reconciliación periódica pertenecen a las siguientes fases.
 
 ## Tecnología
 
@@ -33,7 +36,7 @@ Las notificaciones persistentes, la captura por voz y el widget pertenecen a las
 - Un único módulo Gradle: `app`.
 - Una única actividad: `MainActivity`.
 
-Las siguientes fases incorporarán Room, DataStore, WorkManager, `SpeechRecognizer` y un App Widget, sin añadir backend ni conexión a Internet.
+Las siguientes fases incorporarán DataStore, WorkManager, `SpeechRecognizer` y un App Widget, sin añadir backend ni conexión a Internet.
 
 ## Ejecutar el proyecto
 
@@ -60,6 +63,7 @@ android/app/src/main/java/com/mvppostit/pensieve/
 │   ├── local/
 │   └── repository/
 ├── reminders/
+├── notifications/
 └── ui/home/
 ```
 

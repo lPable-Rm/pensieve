@@ -1,12 +1,10 @@
 package com.mvppostit.pensieve.notifications
 
-import android.Manifest
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
 import com.mvppostit.pensieve.MainActivity
 import com.mvppostit.pensieve.R
@@ -18,13 +16,10 @@ import com.mvppostit.pensieve.data.local.ReminderEntity
  * Esta clase no guarda ni elimina notas: Room continúa siendo la fuente de
  * verdad. Su única responsabilidad es transformar un [ReminderEntity] en una
  * notificación del sistema.
- *
- * Más adelante añadiremos la acción Hecho para completar una nota directamente
- * desde la notificación.
  */
 class ReminderNotificationPublisher(
     private val context: Context,
-) {
+) : ReminderNotifier {
 
     // NotificationManager es el servicio de Android que muestra y retira
     // notificaciones. Con minSdk 31 podemos usar su API nativa directamente.
@@ -34,11 +29,11 @@ class ReminderNotificationPublisher(
     /**
      * Muestra una notificación silenciosa para el recordatorio indicado.
      *
-     * Si la persona no ha concedido el permiso, no intentamos publicarla.
-     * La interfaz solicitará ese permiso en un paso posterior.
+     * Si Android no permite mostrarla, Room conserva el recordatorio como
+     * fuente de verdad y la interfaz mantiene el borrador cuando corresponde.
      */
-    fun publish(reminder: ReminderEntity) {
-        if (!hasNotificationPermission()) return
+    override fun publish(reminder: ReminderEntity) {
+        if (!context.canPostReminderNotifications()) return
 
         val notification = Notification.Builder(
             context,
@@ -69,7 +64,7 @@ class ReminderNotificationPublisher(
     /**
      * Retira la notificación asociada a un recordatorio completado.
      */
-    fun cancel(reminderId: Long) {
+    override fun cancel(reminderId: Long) {
         notificationManager.cancel(reminderId.toInt())
     }
 
@@ -107,17 +102,14 @@ class ReminderNotificationPublisher(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
-    /**
-     * Comprueba el permiso en tiempo de ejecución requerido desde Android 13.
-     *
-     * Declararlo en el Manifest no basta: la persona debe concederlo.
-     */
-    private fun hasNotificationPermission(): Boolean =
-        context.checkSelfPermission(
-            Manifest.permission.POST_NOTIFICATIONS,
-        ) == PackageManager.PERMISSION_GRANTED
-
     private companion object {
         const val OPEN_APP_REQUEST_CODE = 0
     }
+}
+
+/** Contrato mínimo que permite coordinar y probar las notificaciones. */
+interface ReminderNotifier {
+    fun publish(reminder: ReminderEntity)
+
+    fun cancel(reminderId: Long)
 }

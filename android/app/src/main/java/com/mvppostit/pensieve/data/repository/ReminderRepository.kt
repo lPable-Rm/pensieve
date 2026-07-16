@@ -7,9 +7,8 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Punto de acceso a los recordatorios almacenados localmente.
  *
- * El repositorio protege al resto de la aplicación de los detalles de Room.
- * Por ahora delega en el DAO; más adelante seguirá siendo solo responsable de
- * datos, mientras que las notificaciones se coordinarán desde otra capa.
+ * El repositorio protege al resto de la aplicación de los detalles de Room y
+ * se limita a los datos. ReminderManager coordina después las notificaciones.
  */
 class ReminderRepository(
     private val reminderDao: ReminderDao,

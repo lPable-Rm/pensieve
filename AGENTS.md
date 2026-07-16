@@ -301,7 +301,7 @@ Estado: completada.
 - Repositorio.
 - Restauración de notas al reiniciar.
 
-Estado: en curso.
+Estado: completada.
 
 ### Fase 4 — Notificaciones
 
@@ -309,6 +309,8 @@ Estado: en curso.
 - Una notificación por nota.
 - Acción `Hecho`.
 - Abrir la app al pulsar el cuerpo.
+
+Estado: completada.
 
 ### Fase 5 — Captura por voz
 
@@ -356,9 +358,9 @@ Estado: en curso.
 
 ## Estado actual relevante
 
-La aplicación ya compila y se ha ejecutado en un emulador Android API 36.1.
-Las fases 1 y 2 están completadas y la fase 3 está en curso. El bloque actual
-conecta la pantalla con Room mediante un ViewModel, un repositorio y un
+La aplicación compila y se ha ejecutado en un emulador Android API 36.1.
+Las fases 1 a 4 están completadas. La pantalla y la acción nativa `Hecho`
+coordinan Room con una notificación por nota mediante `ReminderManager` y el
 contenedor de dependencias manual.
 
 Archivos principales del bloque actual:
@@ -368,10 +370,12 @@ android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeScreen.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeViewModel.kt
 android/app/src/main/java/com/mvppostit/pensieve/data/local/
 android/app/src/main/java/com/mvppostit/pensieve/data/repository/
+android/app/src/main/java/com/mvppostit/pensieve/reminders/ReminderManager.kt
+android/app/src/main/java/com/mvppostit/pensieve/notifications/
 ```
 
-Antes de continuar con notificaciones, validar la persistencia, la restauración
-y el flujo de completar/deshacer, y mantener el esquema Room exportado.
+El siguiente bloque previsto es la fase 5, captura por voz. Mantener Room como
+fuente de verdad y conservar exportado su esquema al continuar.
 
 ## Referencias de diseño
 
