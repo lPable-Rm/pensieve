@@ -13,4 +13,6 @@
     <string name="reminder_create_failed">No se pudo guardar la nota</string>
     <string name="reminder_complete_failed">No se pudo completar la nota</string>
     <string name="reminder_restore_failed">No se pudo deshacer la acción</string>
+    <string name="reminder_notification_channel_name">Recordatorios activos</string>
+    <string name="reminder_notification_channel_description">Muestra las notas pendientes de Pensieve</string>
 </resources>

@@ -1,0 +1,17 @@
+PENSIEVE — POSIBLES MEJORAS PARA LA VERSIÓN 2.0
+
+Este archivo recoge ideas surgidas durante el desarrollo que quedan fuera del MVP.
+Añadir una idea aquí no implica que esté aprobada ni planificada: habrá que valorar
+su utilidad, complejidad, privacidad y coherencia con la filosofía de Pensieve
+antes de implementarla.
+
+## Recordatorios periódicos opcionales
+
+Permitir que una nota activa vuelva a avisar mediante vibración o sonido cada
+15 minutos, 30 minutos o una hora, hasta que se marque como hecha.
+
+Motivo: puede ayudar a no olvidar recados especialmente importantes.
+
+Pendiente de diseñar: configuración sencilla, comportamiento cuando el teléfono
+está en modo silencioso, consumo de batería y compatibilidad con las restricciones
+de alarmas en segundo plano de Android.

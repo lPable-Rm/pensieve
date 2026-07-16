@@ -1,0 +1,26 @@
+PENSIEVE — CONTEXTO PARA RETOMAR
+
+Fecha: 13 de julio de 2026
+
+Estado del proyecto
+- Fase 3 (persistencia local) está validada.
+- La rama main está limpia y subida a GitHub.
+- Último commit: fcc1235 — Implementar persistencia local con Room.
+
+Qué incluye la Fase 3
+- Room con entidad, DAO, repositorio y esquema v1 exportado.
+- HomeRoute, HomeViewModel y contenedor manual de dependencias.
+- Crear, completar y deshacer operan sobre la base local.
+- Las notas sobreviven al cierre y reapertura de la aplicación.
+- Pruebas instrumentadas para DAO, persistencia y errores del ViewModel.
+- Copias de seguridad desactivadas/excluidas para proteger las notas locales.
+
+Siguiente objetivo: Fase 4 — Notificaciones
+- Crear el canal de notificaciones.
+- Publicar una notificación por nota activa.
+- Añadir la acción «Hecho» sin abrir la aplicación.
+- Abrir la app al pulsar el cuerpo de la notificación.
+
+Antes de implementar, revisar AGENTS.md y los archivos actuales de datos,
+HomeViewModel y HomeRoute. Mantener Room como fuente de verdad y no añadir
+dependencias sin explicarlas y pedir aprobación.
