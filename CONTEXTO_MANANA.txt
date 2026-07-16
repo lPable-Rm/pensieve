@@ -5,7 +5,6 @@ Fecha: 16 de julio de 2026
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
 - Fase 4 (notificaciones) está implementada y validada manualmente.
-- Hay cambios de la fase 4 sin confirmar en Git.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
