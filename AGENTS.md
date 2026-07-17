@@ -320,6 +320,8 @@ Estado: completada.
 - Revisión y confirmación compacta.
 - Manejo de errores.
 
+Estado: completada y auditada.
+
 ### Fase 6 — Widget
 
 - Widget de acceso rápido.
@@ -359,23 +361,35 @@ Estado: completada.
 ## Estado actual relevante
 
 La aplicación compila y se ha ejecutado en un emulador Android API 36.1.
-Las fases 1 a 4 están completadas. La pantalla y la acción nativa `Hecho`
-coordinan Room con una notificación por nota mediante `ReminderManager` y el
-contenedor de dependencias manual.
+Las fases 1 a 5 están completadas y auditadas. La pantalla, la captura manual,
+la captura local por voz y la acción nativa `Hecho` coordinan Room con una
+notificación por nota mediante `ReminderManager` y el contenedor de
+dependencias manual.
+
+La captura por voz solicita `RECORD_AUDIO` únicamente al iniciarse, usa
+`SpeechRecognizer` en el dispositivo sin respaldo online, muestra una barra
+compacta de escucha y revisión y conserva la entrada manual como alternativa
+cuando el permiso, el motor o el modelo local no están disponibles. No se
+almacena audio ni se registran transcripciones.
 
 Archivos principales del bloque actual:
 
 ```text
+android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeRoute.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeScreen.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeViewModel.kt
+android/app/src/main/java/com/mvppostit/pensieve/ui/home/components/VoiceInputBar.kt
+android/app/src/main/java/com/mvppostit/pensieve/voice/OnDeviceVoiceRecognizer.kt
 android/app/src/main/java/com/mvppostit/pensieve/data/local/
 android/app/src/main/java/com/mvppostit/pensieve/data/repository/
 android/app/src/main/java/com/mvppostit/pensieve/reminders/ReminderManager.kt
 android/app/src/main/java/com/mvppostit/pensieve/notifications/
 ```
 
-El siguiente bloque previsto es la fase 5, captura por voz. Mantener Room como
-fuente de verdad y conservar exportado su esquema al continuar.
+El siguiente bloque previsto es la fase 6, widget de acceso rápido. Debe abrir
+el flujo visible de voz ya existente en la actividad principal, sin duplicar
+el reconocedor ni guardar una nota directamente desde el widget. Mantener Room
+como fuente de verdad y conservar exportado su esquema al continuar.
 
 ## Referencias de diseño
 

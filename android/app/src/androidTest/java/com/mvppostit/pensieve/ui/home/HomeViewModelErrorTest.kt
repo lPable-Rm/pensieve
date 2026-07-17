@@ -10,6 +10,7 @@ import com.mvppostit.pensieve.data.local.ReminderEntity
 import com.mvppostit.pensieve.data.repository.ReminderRepository
 import com.mvppostit.pensieve.notifications.ReminderNotifier
 import com.mvppostit.pensieve.reminders.ReminderManager
+import com.mvppostit.pensieve.voice.VoiceRecognitionFailure
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
@@ -197,6 +198,197 @@ class HomeViewModelErrorTest {
         assertFalse(viewModel.undoInProgress.value)
         assertNull(viewModel.pendingUndoReminder.value)
         assertTrue(restoredState.reminders.any { it.id == reminder.id })
+    }
+
+    @Test
+    fun voicePartial_thenFinalResult_movesToEditableReview() = runBlocking {
+        val viewModel = createViewModel(FakeReminderDao())
+
+        viewModel.onVoiceListeningStarted()
+        viewModel.onVoicePartialResult("Recoger a los niños")
+
+        val listeningState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                (state.voiceInputState as? VoiceInputState.Listening)
+                    ?.partialText == "Recoger a los niños"
+            }
+        }
+        assertEquals(
+            "Recoger a los niños",
+            (listeningState.voiceInputState as VoiceInputState.Listening).partialText,
+        )
+
+        viewModel.onVoiceProcessing()
+        val processingState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { it.voiceInputState is VoiceInputState.Processing }
+        }
+        assertTrue(processingState.voiceInputState is VoiceInputState.Processing)
+
+        viewModel.onVoiceFinalResult("  Recoger a los niños a las cinco  ")
+        val reviewState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                (state.voiceInputState as? VoiceInputState.Review)
+                    ?.text == "Recoger a los niños a las cinco"
+            }
+        }
+
+        assertEquals(
+            "Recoger a los niños a las cinco",
+            (reviewState.voiceInputState as VoiceInputState.Review).text,
+        )
+    }
+
+    @Test
+    fun emptyVoiceResult_showsNoSpeechError() = runBlocking {
+        val viewModel = createViewModel(FakeReminderDao())
+
+        viewModel.onVoiceListeningStarted()
+        viewModel.onVoiceFinalResult("   ")
+
+        val errorState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                state.voiceInputState == VoiceInputState.Error(VoiceInputError.NoSpeech)
+            }
+        }
+
+        assertEquals(
+            VoiceInputState.Error(VoiceInputError.NoSpeech),
+            errorState.voiceInputState,
+        )
+    }
+
+    @Test
+    fun voiceSave_usesOneInsertAndTrimsTheEditedText() = runBlocking {
+        val reminderDao = FakeReminderDao()
+        val viewModel = createViewModel(reminderDao)
+
+        viewModel.onVoiceFinalResult("Comprar pan")
+        viewModel.updateVoiceReminderText("  Comprar pan integral  ")
+
+        // isCreatingReminder se activa antes de lanzar la corrutina, por lo que
+        // una segunda pulsación no puede insertar un duplicado.
+        viewModel.createVoiceReminder()
+        viewModel.createVoiceReminder()
+
+        val savedState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                state.voiceInputState is VoiceInputState.Hidden &&
+                    state.reminders.singleOrNull()?.text == "Comprar pan integral"
+            }
+        }
+
+        assertEquals(1, reminderDao.insertAttempts)
+        assertEquals("Comprar pan integral", savedState.reminders.single().text)
+    }
+
+    @Test
+    fun voiceSaveFailure_preservesTheReviewForAnotherAttempt() = runBlocking {
+        val reminderDao = FakeReminderDao().apply {
+            failOnInsert = true
+        }
+        val viewModel = createViewModel(reminderDao)
+        val reviewedText = "Llamar al taller"
+        val errorDeferred = async(start = CoroutineStart.UNDISPATCHED) {
+            viewModel.operationError.filterNotNull().first()
+        }
+
+        viewModel.onVoiceFinalResult(reviewedText)
+        viewModel.createVoiceReminder()
+
+        val error = withTimeout(TestTimeoutMillis) { errorDeferred.await() }
+        val recoveredState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                (state.voiceInputState as? VoiceInputState.Review)?.text == reviewedText &&
+                    !state.isCreatingReminder
+            }
+        }
+
+        assertEquals(ReminderOperation.Create, error.operation)
+        assertEquals(1, reminderDao.insertAttempts)
+        assertEquals(
+            reviewedText,
+            (recoveredState.voiceInputState as VoiceInputState.Review).text,
+        )
+    }
+
+    @Test
+    fun recognizerPermissionFailure_offersApplicationSettings() = runBlocking {
+        val viewModel = createViewModel(FakeReminderDao())
+
+        viewModel.onVoiceRecognitionFailure(VoiceRecognitionFailure.PermissionDenied)
+
+        val errorState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                state.voiceInputState ==
+                    VoiceInputState.Error(
+                        VoiceInputError.PermissionDenied(canOpenSettings = true),
+                    )
+            }
+        }
+
+        assertEquals(
+            VoiceInputState.Error(
+                VoiceInputError.PermissionDenied(canOpenSettings = true),
+            ),
+            errorState.voiceInputState,
+        )
+    }
+
+    @Test
+    fun lifecycleCancellation_hidesCaptureButPreservesReview() = runBlocking {
+        val viewModel = createViewModel(FakeReminderDao())
+
+        viewModel.onVoiceListeningStarted()
+        withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { it.voiceInputState is VoiceInputState.Listening }
+        }
+        viewModel.cancelActiveVoiceCapture()
+        withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { it.voiceInputState is VoiceInputState.Hidden }
+        }
+
+        viewModel.onVoiceListeningStarted()
+        viewModel.onVoiceProcessing()
+        withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { it.voiceInputState is VoiceInputState.Processing }
+        }
+        viewModel.cancelActiveVoiceCapture()
+        withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { it.voiceInputState is VoiceInputState.Hidden }
+        }
+
+        viewModel.onVoiceFinalResult("Conservar esta revisión")
+        viewModel.cancelActiveVoiceCapture()
+        val reviewState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                (state.voiceInputState as? VoiceInputState.Review)?.text ==
+                    "Conservar esta revisión"
+            }
+        }
+
+        assertEquals(
+            "Conservar esta revisión",
+            (reviewState.voiceInputState as VoiceInputState.Review).text,
+        )
+    }
+
+    @Test
+    fun closingPermissionError_keepsManualInputAvailable() = runBlocking {
+        val viewModel = createViewModel(FakeReminderDao())
+
+        viewModel.onVoicePermissionDenied(canOpenSettings = false)
+        viewModel.cancelVoiceInput()
+        viewModel.showManualInput()
+
+        val manualState = withTimeout(TestTimeoutMillis) {
+            viewModel.uiState.first { state ->
+                state.isManualInputVisible &&
+                    state.voiceInputState is VoiceInputState.Hidden
+            }
+        }
+
+        assertTrue(manualState.isManualInputVisible)
+        assertTrue(manualState.voiceInputState is VoiceInputState.Hidden)
     }
 
     private fun createViewModel(reminderDao: ReminderDao): HomeViewModel {

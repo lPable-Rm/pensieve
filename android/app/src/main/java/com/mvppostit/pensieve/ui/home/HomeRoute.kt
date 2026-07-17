@@ -1,26 +1,50 @@
 package com.mvppostit.pensieve.ui.home
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mvppostit.pensieve.R
 import com.mvppostit.pensieve.notifications.canPostReminderNotifications
 import com.mvppostit.pensieve.notifications.hasReminderNotificationPermission
 import com.mvppostit.pensieve.reminders.ReminderManager
+import com.mvppostit.pensieve.voice.OnDeviceVoiceRecognizer
+import com.mvppostit.pensieve.voice.VoiceRecognitionEvent
+import com.mvppostit.pensieve.voice.VoiceRecognitionFailure
 import kotlinx.coroutines.launch
+
+/** Indica qué borrador debe continuar cuando Android responde al permiso de notificaciones. */
+private enum class ReminderCreation {
+    Manual,
+    Voice,
+}
 
 /**
  * Conecta la pantalla visual con Android y con HomeViewModel.
@@ -39,6 +63,7 @@ fun HomeRoute(
         factory = remember(reminderManager) { HomeViewModelFactory(reminderManager) },
     )
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pendingUndoReminder by viewModel.pendingUndoReminder.collectAsStateWithLifecycle()
@@ -52,6 +77,29 @@ fun HomeRoute(
     val restoreFailedMessage = stringResource(R.string.reminder_restore_failed)
     val notificationPermissionDeniedMessage =
         stringResource(R.string.notification_permission_denied)
+    // Activity Result puede entregar una respuesta después de recrear la
+    // actividad. Conservamos estos dos marcadores pequeños para interpretar
+    // correctamente el permiso sin guardar aquí el texto de ningún borrador.
+    var pendingReminderCreation by rememberSaveable {
+        mutableStateOf<ReminderCreation?>(null)
+    }
+    var hasRequestedMicrophonePermission by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    // La instancia vive junto a la pantalla, nunca en el contenedor global ni
+    // en el ViewModel. Así puede destruirse al abandonar esta composición.
+    val voiceRecognizer = remember(context.applicationContext, viewModel) {
+        OnDeviceVoiceRecognizer(context.applicationContext) { event ->
+            when (event) {
+                VoiceRecognitionEvent.ListeningStarted -> viewModel.onVoiceListeningStarted()
+                VoiceRecognitionEvent.Processing -> viewModel.onVoiceProcessing()
+                is VoiceRecognitionEvent.PartialResult -> viewModel.onVoicePartialResult(event.text)
+                is VoiceRecognitionEvent.FinalResult -> viewModel.onVoiceFinalResult(event.text)
+                is VoiceRecognitionEvent.Failure -> viewModel.onVoiceRecognitionFailure(event.reason)
+            }
+        }
+    }
 
     fun showNotificationUnavailableMessage() {
         coroutineScope.launch {
@@ -62,18 +110,135 @@ fun HomeRoute(
         }
     }
 
+    fun continueReminderCreation(creation: ReminderCreation) {
+        when (creation) {
+            ReminderCreation.Manual -> viewModel.createManualReminder()
+            ReminderCreation.Voice -> viewModel.createVoiceReminder()
+        }
+    }
+
     // El launcher debe recordarse entre recomposiciones. Tras conceder el
     // permiso retomamos la acción original de guardar la nota.
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { permissionGranted ->
+        val pendingCreation = pendingReminderCreation
+        pendingReminderCreation = null
+
         if (permissionGranted && context.canPostReminderNotifications()) {
-            viewModel.createManualReminder()
+            if (pendingCreation != null) {
+                continueReminderCreation(pendingCreation)
+            }
         } else {
             // El borrador se conserva en HomeViewModel para que la persona no
             // pierda lo que ha escrito y pueda decidir qué hacer después.
             showNotificationUnavailableMessage()
         }
+    }
+
+    val microphonePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { permissionGranted ->
+        if (!permissionGranted) {
+            viewModel.onVoicePermissionDenied(
+                canOpenSettings = context.isMicrophonePermissionPermanentlyDenied(
+                    hasRequestedMicrophonePermission = hasRequestedMicrophonePermission,
+                ),
+            )
+        } else if (viewModel.canStartVoiceInput()) {
+            voiceRecognizer.start()
+        }
+    }
+
+    fun createReminderWithNotificationPermission(creation: ReminderCreation) {
+        // Pedimos este permiso solo cuando el texto ya está listo para llegar a Room.
+        when {
+            context.canPostReminderNotifications() -> continueReminderCreation(creation)
+            !context.hasReminderNotificationPermission() -> {
+                pendingReminderCreation = creation
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            else -> showNotificationUnavailableMessage()
+        }
+    }
+
+    fun startVoiceInput() {
+        if (!viewModel.canStartVoiceInput()) return
+
+        if (!voiceRecognizer.isAvailable()) {
+            viewModel.onVoiceRecognitionFailure(
+                VoiceRecognitionFailure.RecognizerUnavailable,
+            )
+            return
+        }
+
+        if (
+            context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            voiceRecognizer.start()
+        } else {
+            hasRequestedMicrophonePermission = true
+            microphonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    fun cancelVoiceInput() {
+        voiceRecognizer.cancel()
+        viewModel.cancelVoiceInput()
+    }
+
+    fun retryVoiceInput() {
+        // Error no es un estado apto para iniciar una nueva sesión. Lo cerramos
+        // primero y reutilizamos el mismo camino de permiso y disponibilidad.
+        cancelVoiceInput()
+        startVoiceInput()
+    }
+
+    fun openApplicationSettings() {
+        context.startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", context.packageName, null),
+            ),
+        )
+    }
+
+    // La escucha no debe continuar sin una superficie visible. La revisión ya
+    // recibida se conserva para que una rotación o ir a segundo plano no borre texto.
+    DisposableEffect(lifecycleOwner, voiceRecognizer, viewModel) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                voiceRecognizer.cancel()
+                viewModel.cancelActiveVoiceCapture()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            voiceRecognizer.destroy()
+            viewModel.cancelActiveVoiceCapture()
+        }
+    }
+
+    val isVoiceInputDismissible = when (uiState.voiceInputState) {
+        is VoiceInputState.Listening,
+        VoiceInputState.Processing,
+        is VoiceInputState.Review,
+        is VoiceInputState.Error,
+        -> true
+
+        VoiceInputState.Hidden,
+        is VoiceInputState.Saving,
+        -> false
+    }
+
+    // Atrás tiene prioridad sobre cerrar la actividad mientras haya una captura
+    // o una revisión activa; Room no se toca hasta la confirmación de Guardar.
+    BackHandler(enabled = isVoiceInputDismissible) {
+        voiceRecognizer.cancel()
+        viewModel.cancelVoiceInput()
     }
 
     // Un error tiene prioridad, pero no elimina el Deshacer pendiente. Cuando
@@ -128,21 +293,42 @@ fun HomeRoute(
         uiState = uiState,
         modifier = modifier,
         onNewNoteClick = viewModel::showManualInput,
+        onVoiceNoteClick = ::startVoiceInput,
         onManualReminderTextChange = viewModel::updateManualReminderText,
         onCreateManualReminder = {
-            // Pedimos el permiso solo cuando una nota ya está lista para
-            // guardarse, no al abrir Pensieve ni al mostrar el campo de texto.
-            when {
-                context.canPostReminderNotifications() -> viewModel.createManualReminder()
-                !context.hasReminderNotificationPermission() -> {
-                    notificationPermissionLauncher.launch(
-                        Manifest.permission.POST_NOTIFICATIONS,
-                    )
-                }
-                else -> showNotificationUnavailableMessage()
-            }
+            createReminderWithNotificationPermission(ReminderCreation.Manual)
         },
         onCancelManualReminder = viewModel::cancelManualReminder,
         onCompleteReminderClick = viewModel::completeReminder,
+        onStopVoiceRecording = voiceRecognizer::stop,
+        onVoiceReminderTextChange = viewModel::updateVoiceReminderText,
+        onCreateVoiceReminder = {
+            createReminderWithNotificationPermission(ReminderCreation.Voice)
+        },
+        onCancelVoiceInput = ::cancelVoiceInput,
+        onRetryVoiceInput = ::retryVoiceInput,
+        onOpenMicrophoneSettings = ::openApplicationSettings,
     )
 }
+
+/**
+ * Distingue la denegación permanente de una denegación que Android aún puede
+ * volver a preguntar. La marca local evita confundir el estado inicial con
+ * "No volver a preguntar".
+ */
+private fun Context.isMicrophonePermissionPermanentlyDenied(
+    hasRequestedMicrophonePermission: Boolean,
+): Boolean {
+    if (!hasRequestedMicrophonePermission) return false
+
+    val activity = findActivity() ?: return false
+    return !activity.shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)
+}
+
+/** LocalContext puede estar envuelto; recorremos los wrappers hasta la actividad real. */
+private tailrec fun Context.findActivity(): Activity? =
+    when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
+    }

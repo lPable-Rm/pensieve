@@ -1,11 +1,15 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 16 de julio de 2026
+Fecha: 17 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
-- Fase 4 (notificaciones) está implementada y validada manualmente y con
-  pruebas automatizadas en Android API 36.1.
+- Fase 4 (notificaciones) está terminada y auditada tras aplicar las mejoras
+  de compatibilidad, robustez y calidad descritas abajo. Está validada
+  manualmente y con pruebas automatizadas en Android API 36.1.
+- Fase 5 (captura por voz) está terminada y auditada. La implementación y sus
+  mejoras de robustez, accesibilidad y calidad están validadas en el emulador
+  Android API 36.1.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
@@ -38,16 +42,51 @@ Qué incluye la Fase 4
 - :app:compileDebugKotlin, testDebugUnitTest, connectedDebugAndroidTest,
   :app:assembleDebug y lintDebug terminan correctamente.
 
+Qué incluye la Fase 5
+- El permiso RECORD_AUDIO se solicita únicamente cuando el usuario pulsa el
+  micrófono y nunca al abrir la aplicación.
+- La disponibilidad del micrófono y del motor local se comprueba antes de
+  pedir permiso y de comenzar la escucha.
+- OnDeviceVoiceRecognizer encapsula solo SpeechRecognizer, se ejecuta en el
+  hilo principal, invalida callbacks de sesiones antiguas y libera siempre el
+  reconocedor.
+- Se usa createOnDeviceSpeechRecognizer sin respaldo online. La aplicación no
+  declara INTERNET, no almacena audio y no registra notas ni transcripciones.
+- HomeViewModel conserva los estados de escucha, transcripción parcial,
+  procesamiento, revisión, guardado y error.
+- VoiceInputBar mantiene todo el flujo visible dentro de la pantalla principal
+  y permite detener, editar, cancelar, reintentar, abrir Ajustes y confirmar.
+- La revisión nunca se guarda automáticamente. Al confirmar utiliza el mismo
+  ReminderManager que la entrada manual, con Room como fuente de verdad y la
+  notificación asociada cuando Android permite publicarla.
+- La escucha se cancela al pasar a segundo plano, mientras que una revisión ya
+  obtenida se conserva.
+- Los errores de permiso, motor, idioma, silencio y fallos temporales se
+  presentan sin bloquear la entrada manual.
+- La accesibilidad anuncia solo estados estables, evita repetir parciales y
+  comunica correctamente cuándo el botón de voz está deshabilitado.
+- Las pruebas de ViewModel, estados de Compose, accesibilidad e integración
+  compilan y se han validado junto con la batería manual en el emulador.
+- :app:compileDebugKotlin, testDebugUnitTest, connectedDebugAndroidTest,
+  :app:assembleDebug y lintDebug terminan correctamente.
+- La build usa Gradle 9.4.1 con el JDK integrado jbr-21; la caché de
+  configuración se almacena y reutiliza correctamente.
+- La validación adicional en dispositivo físico se mantiene para las fases de
+  calidad y publicación comercial y no bloquea el cierre acordado de esta fase.
+
 Pendiente para la Fase 7
 - Si el usuario descarta una notificación al deslizarla, todavía no se vuelve a
   publicar. La reconciliación al abrir la app, tras reiniciar y con WorkManager
   corresponde a esa fase.
 
-Siguiente objetivo: Fase 5 — Captura por voz
-- Pedir el permiso de micrófono solo al iniciar una captura por voz.
-- Usar SpeechRecognizer con reconocimiento en el dispositivo cuando exista.
-- Mostrar transcripción parcial y revisión compacta antes de guardar.
-- No almacenar audio ni añadir dependencias sin explicarlas y pedir aprobación.
+Siguiente objetivo: Fase 6 — Widget
+- Añadir un widget de acceso rápido con una única acción clara de voz.
+- Abrir MainActivity y activar el flujo visible de voz ya existente.
+- No reconocer audio, guardar notas ni duplicar lógica desde el propio widget.
+- Mantener una sola actividad, un solo HomeViewModel y un solo controlador de
+  SpeechRecognizer.
+- Diseñar y auditar primero la integración mínima antes de escribir código.
 
 Antes de continuar, revisar AGENTS.md y los archivos actuales relacionados con
-la entrada manual, HomeViewModel, ReminderManager y las notificaciones.
+MainActivity, HomeRoute, HomeViewModel, OnDeviceVoiceRecognizer, el Manifest y
+la configuración actual de notificaciones.

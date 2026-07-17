@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +60,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import com.mvppostit.pensieve.R
 import com.mvppostit.pensieve.data.local.ReminderEntity
+import com.mvppostit.pensieve.ui.home.components.VoiceInputBar
 import com.mvppostit.pensieve.ui.theme.PensieveTheme
 import java.text.DateFormat
 import java.util.Date
@@ -87,8 +89,15 @@ fun HomeScreen(
     onCreateManualReminder: () -> Unit = {},
     onCancelManualReminder: () -> Unit = {},
     onCompleteReminderClick: (Long) -> Unit = {},
+    onStopVoiceRecording: () -> Unit = {},
+    onVoiceReminderTextChange: (String) -> Unit = {},
+    onCreateVoiceReminder: () -> Unit = {},
+    onCancelVoiceInput: () -> Unit = {},
+    onRetryVoiceInput: () -> Unit = {},
+    onOpenMicrophoneSettings: () -> Unit = {},
 ) {
     val justNowLabel = stringResource(R.string.created_just_now)
+    val isVoiceInputActive = uiState.voiceInputState !is VoiceInputState.Hidden
 
     Column(
         modifier = modifier
@@ -101,6 +110,23 @@ fun HomeScreen(
         PensieveHeader()
 
         Spacer(modifier = Modifier.height(28.dp))
+
+        // La voz mantiene su propia posición fija sobre la lista para que la
+        // persona vea la transcripción y pueda detenerla sin abrir otra pantalla.
+        if (isVoiceInputActive) {
+            VoiceInputBar(
+                state = uiState.voiceInputState,
+                onStopRecording = onStopVoiceRecording,
+                onTextChange = onVoiceReminderTextChange,
+                onSave = onCreateVoiceReminder,
+                onCancel = onCancelVoiceInput,
+                onRetry = onRetryVoiceInput,
+                onOpenSettings = onOpenMicrophoneSettings,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+            )
+        }
 
         // weight hace que la lista ocupe el espacio libre, dejando los botones
         // inferiores siempre accesibles aunque haya muchos recordatorios.
@@ -154,6 +180,9 @@ fun HomeScreen(
         HomeActions(
             onNewNoteClick = onNewNoteClick,
             onVoiceNoteClick = onVoiceNoteClick,
+            isManualInputVisible = uiState.isManualInputVisible,
+            isVoiceInputActive = isVoiceInputActive,
+            isSavingReminder = uiState.isCreatingReminder,
         )
     }
 }
@@ -365,7 +394,14 @@ private fun ReminderCard(
 private fun HomeActions(
     onNewNoteClick: () -> Unit,
     onVoiceNoteClick: () -> Unit,
+    isManualInputVisible: Boolean,
+    isVoiceInputActive: Boolean,
+    isSavingReminder: Boolean,
 ) {
+    val canCreateManualReminder = !isVoiceInputActive && !isSavingReminder
+    val canCreateVoiceReminder =
+        !isManualInputVisible && !isVoiceInputActive && !isSavingReminder
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -375,6 +411,7 @@ private fun HomeActions(
     ) {
         FilledTonalButton(
             onClick = onNewNoteClick,
+            enabled = canCreateManualReminder,
             modifier = Modifier
                 .weight(1f)
                 .heightIn(min = 56.dp),
@@ -403,11 +440,23 @@ private fun HomeActions(
         }
 
         FloatingActionButton(
-            onClick = onVoiceNoteClick,
-            modifier = Modifier.size(64.dp),
+            onClick = {
+                if (canCreateVoiceReminder) {
+                    onVoiceNoteClick()
+                }
+            },
+            modifier = Modifier
+                .size(64.dp)
+                .semantics {
+                    if (!canCreateVoiceReminder) {
+                        disabled()
+                    }
+                },
             shape = CircleShape,
-            containerColor = PrimaryColor,
-            contentColor = Color.White,
+            // FloatingActionButton no tiene enabled. Atenuamos su aspecto y
+            // protegemos el callback para no crear dos borradores simultáneos.
+            containerColor = if (canCreateVoiceReminder) PrimaryColor else PrimaryLightColor,
+            contentColor = if (canCreateVoiceReminder) Color.White else PrimaryColor,
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_mic),

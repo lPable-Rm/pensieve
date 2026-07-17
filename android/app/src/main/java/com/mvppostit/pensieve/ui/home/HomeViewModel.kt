@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.mvppostit.pensieve.data.local.ReminderEntity
 import com.mvppostit.pensieve.reminders.ReminderManager
+import com.mvppostit.pensieve.voice.VoiceRecognitionFailure
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+/** Agrupa los campos de edición para no superar la sobrecarga tipada de combine. */
+private data class HomeInputState(
+    val isManualInputVisible: Boolean,
+    val manualReminderText: String,
+    val isCreatingReminder: Boolean,
+    val voiceInputState: VoiceInputState,
+)
 
 /**
  * Mantiene el estado de la pantalla y coordina sus acciones con los datos.
@@ -33,6 +42,7 @@ class HomeViewModel(
     private val isCreatingReminder = MutableStateFlow(false)
     private val completingReminderIds = MutableStateFlow<Set<Long>>(emptySet())
     private val isUndoInProgress = MutableStateFlow(false)
+    private val voiceInputState = MutableStateFlow<VoiceInputState>(VoiceInputState.Hidden)
 
     private val _operationError = MutableStateFlow<HomeOperationError?>(null)
     internal val operationError: StateFlow<HomeOperationError?> = _operationError.asStateFlow()
@@ -56,20 +66,33 @@ class HomeViewModel(
     private val _pendingUndoReminder = MutableStateFlow<ReminderEntity?>(null)
     val pendingUndoReminder: StateFlow<ReminderEntity?> = _pendingUndoReminder.asStateFlow()
 
-    /** Estado continuo que HomeRoute observará respetando el ciclo de vida. */
-    val uiState: StateFlow<HomeUiState> = combine(
-        observedReminders,
+    private val inputState = combine(
         isManualInputVisible,
         manualReminderText,
-        completingReminderIds,
         isCreatingReminder,
-    ) { reminders, isInputVisible, inputText, completingIds, isCreating ->
-        HomeUiState(
-            reminders = reminders,
-            completingReminderIds = completingIds,
+        voiceInputState,
+    ) { isInputVisible, inputText, isCreating, voiceState ->
+        HomeInputState(
             isManualInputVisible = isInputVisible,
             manualReminderText = inputText,
             isCreatingReminder = isCreating,
+            voiceInputState = voiceState,
+        )
+    }
+
+    /** Estado continuo que HomeRoute observará respetando el ciclo de vida. */
+    val uiState: StateFlow<HomeUiState> = combine(
+        observedReminders,
+        inputState,
+        completingReminderIds,
+    ) { reminders, input, completingIds ->
+        HomeUiState(
+            reminders = reminders,
+            completingReminderIds = completingIds,
+            isManualInputVisible = input.isManualInputVisible,
+            manualReminderText = input.manualReminderText,
+            isCreatingReminder = input.isCreatingReminder,
+            voiceInputState = input.voiceInputState,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -78,6 +101,8 @@ class HomeViewModel(
     )
 
     fun showManualInput() {
+        if (voiceInputState.value !is VoiceInputState.Hidden || isCreatingReminder.value) return
+
         isManualInputVisible.value = true
     }
 
@@ -96,7 +121,13 @@ class HomeViewModel(
 
     fun createManualReminder() {
         val text = manualReminderText.value.trim()
-        if (text.isEmpty() || isCreatingReminder.value) return
+        if (
+            text.isEmpty() ||
+            isCreatingReminder.value ||
+            voiceInputState.value !is VoiceInputState.Hidden
+        ) {
+            return
+        }
         isCreatingReminder.value = true
 
         viewModelScope.launch {
@@ -105,6 +136,112 @@ class HomeViewModel(
                 manualReminderText.value = ""
                 isManualInputVisible.value = false
             } catch (_: SQLiteException) {
+                reportOperationError(ReminderOperation.Create)
+            } finally {
+                isCreatingReminder.value = false
+            }
+        }
+    }
+
+    /** Indica si una nueva captura no competiría con el borrador manual activo. */
+    fun canStartVoiceInput(): Boolean =
+        !isManualInputVisible.value &&
+            !isCreatingReminder.value &&
+            voiceInputState.value is VoiceInputState.Hidden
+
+    /** El controlador local confirmó que la escucha ha comenzado. */
+    fun onVoiceListeningStarted() {
+        if (isManualInputVisible.value || isCreatingReminder.value) return
+
+        voiceInputState.value = VoiceInputState.Listening(
+            startedAtMillis = System.currentTimeMillis(),
+        )
+    }
+
+    /** Conserva solo el último parcial; no se persiste ni se registra en logs. */
+    fun onVoicePartialResult(text: String) {
+        val listeningState = voiceInputState.value as? VoiceInputState.Listening ?: return
+        voiceInputState.value = listeningState.copy(partialText = text)
+    }
+
+    /** Al terminar de hablar esperamos el resultado final antes de permitir guardar. */
+    fun onVoiceProcessing() {
+        if (voiceInputState.value is VoiceInputState.Listening) {
+            voiceInputState.value = VoiceInputState.Processing
+        }
+    }
+
+    /** El resultado final siempre pasa por revisión: nunca se guarda automáticamente. */
+    fun onVoiceFinalResult(text: String) {
+        val finalText = text.trim()
+        voiceInputState.value = if (finalText.isEmpty()) {
+            VoiceInputState.Error(VoiceInputError.NoSpeech)
+        } else {
+            VoiceInputState.Review(finalText)
+        }
+    }
+
+    /** Traduce el error técnico del controlador a un estado legible para la interfaz. */
+    fun onVoiceRecognitionFailure(failure: VoiceRecognitionFailure) {
+        val error = when (failure) {
+            VoiceRecognitionFailure.NoSpeech -> VoiceInputError.NoSpeech
+            VoiceRecognitionFailure.LanguageUnavailable -> VoiceInputError.LanguageUnavailable
+            VoiceRecognitionFailure.RecognizerUnavailable -> VoiceInputError.RecognizerUnavailable
+            VoiceRecognitionFailure.PermissionDenied ->
+                VoiceInputError.PermissionDenied(canOpenSettings = true)
+            VoiceRecognitionFailure.TemporaryFailure -> VoiceInputError.TemporaryFailure
+        }
+        voiceInputState.value = VoiceInputState.Error(error)
+    }
+
+    /** La ruta informa de este error porque el permiso pertenece a Android, no al motor. */
+    fun onVoicePermissionDenied(canOpenSettings: Boolean) {
+        voiceInputState.value = VoiceInputState.Error(
+            VoiceInputError.PermissionDenied(canOpenSettings),
+        )
+    }
+
+    fun updateVoiceReminderText(text: String) {
+        val reviewState = voiceInputState.value as? VoiceInputState.Review ?: return
+        if (!isCreatingReminder.value) {
+            voiceInputState.value = reviewState.copy(text = text)
+        }
+    }
+
+    /** Descarta explícitamente la captura o su revisión, sin modificar Room. */
+    fun cancelVoiceInput() {
+        if (voiceInputState.value !is VoiceInputState.Saving) {
+            voiceInputState.value = VoiceInputState.Hidden
+        }
+    }
+
+    /** Al ir a segundo plano solo se cancela la escucha; la revisión se conserva. */
+    fun cancelActiveVoiceCapture() {
+        when (voiceInputState.value) {
+            is VoiceInputState.Listening,
+            VoiceInputState.Processing,
+            -> voiceInputState.value = VoiceInputState.Hidden
+
+            else -> Unit
+        }
+    }
+
+    /** Guarda la transcripción mediante el mismo flujo de Room y notificaciones. */
+    fun createVoiceReminder() {
+        val reviewState = voiceInputState.value as? VoiceInputState.Review ?: return
+        val text = reviewState.text.trim()
+        if (text.isEmpty() || isCreatingReminder.value) return
+
+        isCreatingReminder.value = true
+        voiceInputState.value = VoiceInputState.Saving(reviewState.text)
+
+        viewModelScope.launch {
+            try {
+                reminderManager.createReminder(text)
+                voiceInputState.value = VoiceInputState.Hidden
+            } catch (_: SQLiteException) {
+                // El borrador vuelve a Review para poder corregirlo o reintentar.
+                voiceInputState.value = VoiceInputState.Review(reviewState.text)
                 reportOperationError(ReminderOperation.Create)
             } finally {
                 isCreatingReminder.value = false
