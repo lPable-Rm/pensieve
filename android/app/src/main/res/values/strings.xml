@@ -15,6 +15,10 @@
     <string name="reminder_restore_failed">No se pudo deshacer la acción</string>
     <string name="reminder_notification_channel_name">Recordatorios activos</string>
     <string name="reminder_notification_channel_description">Muestra las notas pendientes de Pensieve</string>
+    <string name="voice_capture_notification_channel_name">Captura de voz</string>
+    <string name="voice_capture_notification_channel_description">Indica cuándo Pensieve está escuchando</string>
+    <string name="widget_voice_capture_name">Pensieve: grabar voz</string>
+    <string name="widget_voice_capture_description">Grabar recordatorio</string>
     <string name="complete_reminder_action">Hecho</string>
     <string name="notification_permission_denied">Permite las notificaciones para mantener este recordatorio visible aunque cierres Pensieve.</string>
     <string name="voice_listening">Escuchando…</string>

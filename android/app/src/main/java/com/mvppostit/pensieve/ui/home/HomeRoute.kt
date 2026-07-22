@@ -38,6 +38,7 @@ import com.mvppostit.pensieve.reminders.ReminderManager
 import com.mvppostit.pensieve.voice.OnDeviceVoiceRecognizer
 import com.mvppostit.pensieve.voice.VoiceRecognitionEvent
 import com.mvppostit.pensieve.voice.VoiceRecognitionFailure
+import com.mvppostit.pensieve.widget.VoiceCaptureWidgetProvider
 import kotlinx.coroutines.launch
 
 /** Indica qué borrador debe continuar cuando Android responde al permiso de notificaciones. */
@@ -58,6 +59,8 @@ fun HomeRoute(
     reminderManager: ReminderManager,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
+    widgetVoiceRequestToken: Int = 0,
+    onWidgetVoiceRequestConsumed: (Int) -> Unit = {},
 ) {
     val viewModel: HomeViewModel = viewModel(
         factory = remember(reminderManager) { HomeViewModelFactory(reminderManager) },
@@ -84,6 +87,9 @@ fun HomeRoute(
         mutableStateOf<ReminderCreation?>(null)
     }
     var hasRequestedMicrophonePermission by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isRequestingMicrophonePermission by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -122,6 +128,9 @@ fun HomeRoute(
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { permissionGranted ->
+        // El resultado puede cambiar el camino del widget de fallback a
+        // servicio directo, por eso reconstruimos sus PendingIntent.
+        VoiceCaptureWidgetProvider.updateAll(context)
         val pendingCreation = pendingReminderCreation
         pendingReminderCreation = null
 
@@ -139,6 +148,10 @@ fun HomeRoute(
     val microphonePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { permissionGranted ->
+        isRequestingMicrophonePermission = false
+        // También actualizamos cuando el permiso de micrófono cambia, tanto si
+        // se concede como si se rechaza.
+        VoiceCaptureWidgetProvider.updateAll(context)
         if (!permissionGranted) {
             viewModel.onVoicePermissionDenied(
                 canOpenSettings = context.isMicrophonePermissionPermanentlyDenied(
@@ -163,7 +176,8 @@ fun HomeRoute(
     }
 
     fun startVoiceInput() {
-        if (!viewModel.canStartVoiceInput()) return
+        // Evita lanzar dos diálogos de Android si llegan pulsaciones repetidas.
+        if (!viewModel.canStartVoiceInput() || isRequestingMicrophonePermission) return
 
         if (!voiceRecognizer.isAvailable()) {
             viewModel.onVoiceRecognitionFailure(
@@ -178,9 +192,19 @@ fun HomeRoute(
         ) {
             voiceRecognizer.start()
         } else {
+            isRequestingMicrophonePermission = true
             hasRequestedMicrophonePermission = true
             microphonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
+    }
+
+    // El fallback del widget llega como una señal efímera. Se consume una vez
+    // y reutiliza exactamente la misma función que el botón de la pantalla.
+    LaunchedEffect(widgetVoiceRequestToken) {
+        if (widgetVoiceRequestToken == 0) return@LaunchedEffect
+
+        startVoiceInput()
+        onWidgetVoiceRequestConsumed(widgetVoiceRequestToken)
     }
 
     fun cancelVoiceInput() {
@@ -208,9 +232,19 @@ fun HomeRoute(
     // recibida se conserva para que una rotación o ir a segundo plano no borre texto.
     DisposableEffect(lifecycleOwner, voiceRecognizer, viewModel) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
-                voiceRecognizer.cancel()
-                viewModel.cancelActiveVoiceCapture()
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    // Permisos y canales pueden cambiar fuera de Pensieve; al
+                    // volver actualizamos el destino del siguiente toque.
+                    VoiceCaptureWidgetProvider.updateAll(context)
+                }
+
+                Lifecycle.Event.ON_STOP -> {
+                    voiceRecognizer.cancel()
+                    viewModel.cancelActiveVoiceCapture()
+                }
+
+                else -> Unit
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Solo se solicitará al pulsar la acción de crear una nota por voz. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <!-- La app sigue siendo útil con texto aunque el dispositivo no tenga micrófono. -->
     <uses-feature
@@ -38,6 +40,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Entrada privada del widget hacia la única Activity real de Pensieve. -->
+        <activity-alias
+            android:name=".WidgetVoiceEntry"
+            android:exported="false"
+            android:targetActivity=".MainActivity" />
+
+        <service
+            android:name=".voice.VoiceCaptureService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <!-- El launcher necesita este receiver exportado para alojar el widget. -->
+        <receiver
+            android:name=".widget.VoiceCaptureWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_voice_capture_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/voice_capture_widget_info" />
+        </receiver>
 
         <!-- Solo los PendingIntent creados por Pensieve pueden completar una nota. -->
         <receiver

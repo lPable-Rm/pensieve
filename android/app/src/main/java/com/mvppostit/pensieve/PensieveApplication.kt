@@ -3,6 +3,7 @@ package com.mvppostit.pensieve
 import android.app.Application
 
 import com.mvppostit.pensieve.notifications.ReminderNotificationChannel
+import com.mvppostit.pensieve.notifications.VoiceCaptureNotificationChannel
 
 /**
  * Punto de inicio del proceso de Pensieve.
@@ -17,6 +18,7 @@ class PensieveApplication : Application() {
 
         // El canal debe existir antes de publicar el primer recordatorio.
         ReminderNotificationChannel.create(this)
+        VoiceCaptureNotificationChannel.create(this)
     }
 
     val appContainer: AppContainer by lazy {
