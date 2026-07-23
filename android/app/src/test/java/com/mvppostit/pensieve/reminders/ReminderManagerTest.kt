@@ -86,6 +86,78 @@ class ReminderManagerTest {
         assertEquals(listOf(completedReminder), fixture.notifier.publishedReminders)
     }
 
+    @Test
+    fun reconcileNotifications_republishesReminderWithoutNotification() = runBlocking {
+        val fixture = createFixture()
+        val reminder = fixture.manager.createReminder("Revisar el correo")
+        fixture.events.clear()
+        fixture.notifier.publishedReminders.clear()
+
+        fixture.manager.reconcileNotifications()
+
+        assertEquals(
+            listOf("notification_active_ids", "notification_publish"),
+            fixture.events,
+        )
+        assertEquals(listOf(reminder), fixture.notifier.publishedReminders)
+        assertEquals(emptyList<Long>(), fixture.notifier.cancelledReminderIds)
+    }
+
+    @Test
+    fun reconcileNotifications_cancelsNotificationWithoutReminder() = runBlocking {
+        val fixture = createFixture()
+        val orphanReminderId = 42L
+        fixture.notifier.activeReminderIds += orphanReminderId
+
+        fixture.manager.reconcileNotifications()
+
+        assertEquals(
+            listOf("notification_active_ids", "notification_cancel"),
+            fixture.events,
+        )
+        assertEquals(emptyList<ReminderEntity>(), fixture.notifier.publishedReminders)
+        assertEquals(listOf(orphanReminderId), fixture.notifier.cancelledReminderIds)
+    }
+
+    @Test
+    fun reconcileNotifications_ignoresMatchingReminderAndNotification() = runBlocking {
+        val fixture = createFixture()
+        val reminder = fixture.manager.createReminder("Pagar la factura")
+        fixture.events.clear()
+        fixture.notifier.publishedReminders.clear()
+        fixture.notifier.activeReminderIds += reminder.id
+
+        fixture.manager.reconcileNotifications()
+
+        assertEquals(listOf("notification_active_ids"), fixture.events)
+        assertEquals(emptyList<ReminderEntity>(), fixture.notifier.publishedReminders)
+        assertEquals(emptyList<Long>(), fixture.notifier.cancelledReminderIds)
+    }
+
+    @Test
+    fun reconcileNotifications_repairsSeveralDifferencesAtOnce() = runBlocking {
+        val fixture = createFixture()
+        val existingReminder = fixture.manager.createReminder("Nota conservada")
+        val missingNotificationReminder = fixture.manager.createReminder("Nota a recuperar")
+        val orphanReminderId = 99L
+        fixture.events.clear()
+        fixture.notifier.publishedReminders.clear()
+        fixture.notifier.activeReminderIds += existingReminder.id
+        fixture.notifier.activeReminderIds += orphanReminderId
+
+        fixture.manager.reconcileNotifications()
+
+        assertEquals(
+            listOf("notification_active_ids", "notification_publish", "notification_cancel"),
+            fixture.events,
+        )
+        assertEquals(
+            listOf(missingNotificationReminder),
+            fixture.notifier.publishedReminders,
+        )
+        assertEquals(listOf(orphanReminderId), fixture.notifier.cancelledReminderIds)
+    }
+
     private fun createFixture(): Fixture {
         val events = mutableListOf<String>()
         val dao = FakeReminderDao(events)
@@ -143,11 +215,17 @@ class ReminderManagerTest {
         private val events: MutableList<String>,
     ) : ReminderNotifier {
         val publishedReminders = mutableListOf<ReminderEntity>()
+        val activeReminderIds = mutableSetOf<Long>()
         val cancelledReminderIds = mutableListOf<Long>()
 
         override fun publish(reminder: ReminderEntity) {
             events += "notification_publish"
             publishedReminders += reminder
+        }
+
+        override fun activeReminderIds(): Set<Long> {
+            events += "notification_active_ids"
+            return activeReminderIds.toSet()
         }
 
         override fun cancel(reminderId: Long) {

@@ -1,5 +1,8 @@
 # Fase 6 — Índice de implementación con ChatGPT 5.6 Terra
 
+Estado: **completada y auditada**. La matriz manual queda aplazada
+a las fases 10 y 11 por decisión de producto.
+
 ## Objetivo
 
 Implementar el widget de captura rápida por voz de Pensieve mediante cambios pequeños y auditables.
@@ -158,4 +161,7 @@ No continúes con la siguiente subfase.
 
 ## Cierre de la fase
 
-Solo después de superar 6.6 y repetir las comprobaciones finales se actualizarán `AGENTS.md` y `CONTEXTO_MANANA.txt` para reflejar la arquitectura definitiva y marcar la fase 6 como completada y auditada.
+La subfase 6.6 superó la reauditoría estática y automática. `AGENTS.md` y
+`CONTEXTO_MANANA.txt` reflejan ya la arquitectura definitiva. Las pruebas
+manuales pendientes se conservan como trabajo de calidad y publicación en las
+fases 10 y 11.

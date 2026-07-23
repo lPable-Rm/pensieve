@@ -127,11 +127,11 @@ Flujo:
 7. Publicar la notificación.
 8. Ocultar el campo.
 
-### Entrada por voz
+### Entrada por voz desde la aplicación
 
 Flujo previsto:
 
-1. Pulsar el widget o el botón de micrófono.
+1. Pulsar el botón de micrófono.
 2. Mostrar una superficie visible y compacta de grabación.
 3. Reproducir un bip.
 4. Mostrar la transcripción parcial en directo.
@@ -141,6 +141,24 @@ Flujo previsto:
 8. Guardar la nota y publicar la notificación.
 
 No abrir una pantalla adicional solo para confirmar el texto.
+
+### Entrada rápida desde el widget
+
+Flujo implementado:
+
+1. Pulsar el widget `1 × 1`.
+2. Iniciar directamente un foreground service de tipo `microphone`, sin abrir
+   `MainActivity` durante el uso normal.
+3. Mostrar inmediatamente la notificación temporal `Escuchando…` con la acción
+   `Cancelar` mientras el micrófono está activo.
+4. Reconocer la voz exclusivamente en el dispositivo.
+5. Guardar automáticamente un único resultado final mediante
+   `ReminderManager`, manteniendo Room como fuente de verdad.
+6. Publicar la notificación normal del recordatorio y finalizar el servicio.
+
+El widget no muestra parciales ni una revisión. Si faltan permisos, abre el
+flujo visible de `MainActivity` mediante una entrada privada para que Android
+pueda solicitarlos con una actividad en primer plano.
 
 ### Notificaciones
 
@@ -168,12 +186,24 @@ La primera versión tendrá varias paletas predefinidas almacenadas localmente:
 
 No añadir un selector libre de colores en el MVP.
 
+### Idiomas
+
+- Pensieve seguirá automáticamente el idioma configurado en Android.
+- La primera localización incluirá español e inglés.
+- No añadir un selector de idioma dentro de la aplicación.
+- La interfaz, la voz, las notificaciones y el widget deben usar el mismo
+  idioma del sistema.
+- La estructura de recursos debe permitir añadir traducciones futuras sin
+  cambiar la arquitectura.
+
 ## Seguridad y privacidad
 
 La privacidad es parte central del producto.
 
 - No añadir el permiso `INTERNET` mientras la aplicación sea completamente local.
-- Permisos previstos: `RECORD_AUDIO`, `POST_NOTIFICATIONS` y `RECEIVE_BOOT_COMPLETED`.
+- Permisos previstos: `RECORD_AUDIO`, `POST_NOTIFICATIONS`,
+  `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MICROPHONE` y
+  `RECEIVE_BOOT_COMPLETED`.
 - Solicitar permisos solo cuando sean necesarios y explicar su propósito.
 - No registrar en logs el texto de notas, transcripciones ni datos sensibles.
 - No almacenar audio.
@@ -324,8 +354,13 @@ Estado: completada y auditada.
 
 ### Fase 6 — Widget
 
-- Widget de acceso rápido.
-- Apertura directa del flujo visible de voz.
+- Widget de acceso rápido `1 × 1`.
+- Captura local directa mediante foreground service de micrófono.
+- Guardado automático del resultado final.
+- Fallback visible y privado para preparar permisos.
+
+Estado: completada y auditada. Las pruebas manuales amplias se
+realizarán en las fases 10 y 11.
 
 ### Fase 7 — Recuperación
 
@@ -334,20 +369,33 @@ Estado: completada y auditada.
 - Reinicio del dispositivo.
 - WorkManager periódico.
 
-### Fase 8 — Apariencia
+Estado: completada y auditada. Las pruebas manuales de recuperación se
+realizarán en las fases 10 y 11.
+
+### Fase 8 — Idiomas
+
+- Recursos localizados en español e inglés.
+- Selección automática según el idioma del sistema Android.
+- Coherencia de idioma en interfaz, voz, notificaciones y widget.
+- Base preparada para añadir más traducciones.
+
+### Fase 9 — Apariencia y pulido visual
 
 - Paletas predefinidas.
 - Persistencia con DataStore.
+- Mejora de la interfaz y revisión del diseño de los iconos.
 
-### Fase 9 — Calidad
+### Fase 10 — Calidad
 
 - Pruebas.
+- Prueba específica de concurrencia entre completar o restaurar y reconciliar.
+- Matriz manual pendiente de las fases 6 y 7 en API 31 y API 36.
 - Accesibilidad.
 - Estados vacíos y errores.
 - Rendimiento.
 - Pulido visual.
 
-### Fase 10 — Publicación comercial
+### Fase 11 — Publicación comercial
 
 - Revisión de seguridad.
 - Revisión del Manifest.
@@ -361,7 +409,7 @@ Estado: completada y auditada.
 ## Estado actual relevante
 
 La aplicación compila y se ha ejecutado en un emulador Android API 36.1.
-Las fases 1 a 5 están completadas y auditadas. La pantalla, la captura manual,
+Las fases 1 a 7 están completadas y auditadas. La pantalla, la captura manual,
 la captura local por voz y la acción nativa `Hecho` coordinan Room con una
 notificación por nota mediante `ReminderManager` y el contenedor de
 dependencias manual.
@@ -372,6 +420,29 @@ compacta de escucha y revisión y conserva la entrada manual como alternativa
 cuando el permiso, el motor o el modelo local no están disponibles. No se
 almacena audio ni se registran transcripciones.
 
+El widget inicia `VoiceCaptureService` sin abrir la actividad cuando los
+permisos están preparados. El servicio muestra inmediatamente una notificación
+foreground cancelable, reutiliza `OnDeviceVoiceRecognizer`, ignora parciales y
+guarda una sola transcripción final mediante `ReminderManager`. Durante
+`Guardando…` libera el micrófono y no permite cancelar una escritura ya
+aceptada. Sus notificaciones internas usan IDs negativos para no colisionar con
+Room.
+
+Si falta un permiso, un `PendingIntent` inmutable abre el alias privado
+`WidgetVoiceEntry`, que apunta a la única `MainActivity`. La actividad rechaza
+la misma acción si llega directamente a su componente exportado. La auditoría
+automática de fase 6 finalizó sin errores; la matriz manual se aplaza por
+decisión de producto a las fases 10 y 11.
+
+La fase 7 reconcilia las notas activas de Room con las notificaciones visibles:
+publica las ausentes, cancela las huérfanas e ignora las coincidencias. Un único
+`Mutex` protege crear, completar, restaurar y reconciliar. La reconciliación se
+ejecuta al entrar en primer plano, cada 15 minutos con WorkManager y después de
+`BOOT_COMPLETED`, usando trabajos únicos con política `KEEP`. La auditoría
+terminó sin hallazgos altos o medios. La prueba específica de concurrencia y la
+matriz manual de recuperación se aplazan por decisión de producto a las fases
+10 y 11.
+
 Archivos principales del bloque actual:
 
 ```text
@@ -380,16 +451,18 @@ android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeScreen.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeViewModel.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/components/VoiceInputBar.kt
 android/app/src/main/java/com/mvppostit/pensieve/voice/OnDeviceVoiceRecognizer.kt
+android/app/src/main/java/com/mvppostit/pensieve/voice/VoiceCaptureService.kt
+android/app/src/main/java/com/mvppostit/pensieve/widget/VoiceCaptureWidgetProvider.kt
 android/app/src/main/java/com/mvppostit/pensieve/data/local/
 android/app/src/main/java/com/mvppostit/pensieve/data/repository/
 android/app/src/main/java/com/mvppostit/pensieve/reminders/ReminderManager.kt
 android/app/src/main/java/com/mvppostit/pensieve/notifications/
+android/app/src/main/java/com/mvppostit/pensieve/recovery/
 ```
 
-El siguiente bloque previsto es la fase 6, widget de acceso rápido. Debe abrir
-el flujo visible de voz ya existente en la actividad principal, sin duplicar
-el reconocedor ni guardar una nota directamente desde el widget. Mantener Room
-como fuente de verdad y conservar exportado su esquema al continuar.
+El siguiente bloque previsto es la fase 8, idiomas: localización inicial en
+español e inglés y selección automática según el idioma configurado en Android.
+Debe diseñarse antes de modificar recursos o código.
 
 ## Referencias de diseño
 

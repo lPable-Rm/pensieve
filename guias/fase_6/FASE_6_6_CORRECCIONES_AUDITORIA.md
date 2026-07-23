@@ -1,5 +1,8 @@
 # Fase 6.6 — Correcciones de la auditoría
 
+Estado: **completada y reauditada sin hallazgos altos o medios pendientes**.
+La matriz manual queda aplazada a las fases 10 y 11 por decisión de producto.
+
 ## Objetivo
 
 Corregir únicamente los problemas confirmados durante la auditoría independiente de fase 6. No añadir funciones nuevas ni rehacer la arquitectura.
@@ -200,7 +203,8 @@ El desarrollador debe comprobar manualmente:
 - tamaño `1 × 1` después de retirar y volver a añadir el widget;
 - varias instancias del widget.
 
-No cerrar la fase 6 ni actualizar `AGENTS.md` o `CONTEXTO_MANANA.txt` hasta que estas correcciones sean reauditadas.
+Las correcciones superaron la reauditoría estática y automática. La fase 6 se
+considera cerrada; la matriz manual permanece registrada para las fases 10 y 11.
 
 ## Prompt para Terra
 

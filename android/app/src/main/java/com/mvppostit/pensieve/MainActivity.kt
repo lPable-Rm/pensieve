@@ -16,11 +16,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import com.mvppostit.pensieve.ui.home.HomeRoute
 import com.mvppostit.pensieve.ui.theme.PensieveTheme
 import com.mvppostit.pensieve.widget.VoiceCaptureWidgetProvider
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    /**
+     * La actividad y HomeRoute comparten el mismo coordinador del contenedor.
+     * `lazy` evita construirlo hasta que realmente se necesita.
+     */
+    private val reminderManager by lazy {
+        (application as PensieveApplication).appContainer.reminderManager
+    }
+
+    /**
+     * Conservamos el trabajo para que dos llamadas consecutivas a `onStart`
+     * no lancen dos reconciliaciones simultáneas sobre las mismas notificaciones.
+     */
+    private var notificationReconciliationJob: Job? = null
 
     // Es un contador y no un booleano: dos pulsaciones consecutivas generan
     // dos eventos distinguibles aunque la composición aún esté recomponiendo.
@@ -37,10 +55,6 @@ class MainActivity : ComponentActivity() {
 
         // La Application conserva las dependencias durante todo el proceso.
         // MainActivity solo entrega a la ruta la dependencia que esta necesita.
-        val reminderManager = (application as PensieveApplication)
-            .appContainer
-            .reminderManager
-
         setContent {
             PensieveTheme {
                 // Estado compartido entre el Scaffold, que dibuja el snackbar,
@@ -63,6 +77,25 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                     )
                 }
+            }
+        }
+    }
+
+    /** Android puede llamar a este método al volver a primer plano. */
+    override fun onStart() {
+        super.onStart()
+
+        if (notificationReconciliationJob?.isActive == true) return
+
+        notificationReconciliationJob = lifecycleScope.launch {
+            try {
+                // Room decide qué recordatorios deben existir; Android solo se
+                // ajusta a esa instantánea sin mostrar mensajes a la persona.
+                reminderManager.reconcileNotifications()
+            } catch (exception: Exception) {
+                // Una cancelación pertenece al ciclo de vida y debe propagarse.
+                // Los demás fallos no deben cerrar la pantalla principal.
+                if (exception is CancellationException) throw exception
             }
         }
     }

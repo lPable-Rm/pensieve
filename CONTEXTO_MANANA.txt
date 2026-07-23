@@ -1,6 +1,6 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 17 de julio de 2026
+Fecha: 23 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
@@ -10,6 +10,13 @@ Estado del proyecto
 - Fase 5 (captura por voz) está terminada y auditada. La implementación y sus
   mejoras de robustez, accesibilidad y calidad están validadas en el emulador
   Android API 36.1.
+- Fase 6 (widget) está terminada y auditada. Compilación, tests
+  locales, ensamblado y lint son correctos. La matriz manual del widget y la
+  validación en dispositivo físico se realizarán en las fases 10 y 11 y no
+  bloquean el cierre acordado de esta fase.
+- Fase 7 (recuperación) está terminada y auditada sin hallazgos altos o medios.
+  Tests locales, compilación, ensamblado y lint son correctos. La matriz manual
+  se realizará junto con la del widget en las fases 10 y 11.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
@@ -74,19 +81,64 @@ Qué incluye la Fase 5
 - La validación adicional en dispositivo físico se mantiene para las fases de
   calidad y publicación comercial y no bloquea el cierre acordado de esta fase.
 
-Pendiente para la Fase 7
-- Si el usuario descarta una notificación al deslizarla, todavía no se vuelve a
-  publicar. La reconciliación al abrir la app, tras reiniciar y con WorkManager
-  corresponde a esa fase.
+Qué incluye la Fase 6
+- Widget clásico 1 × 1 implementado con AppWidgetProvider y RemoteViews, sin
+  Glance ni dependencias nuevas.
+- Con permisos preparados, el PendingIntent inicia directamente
+  VoiceCaptureService sin abrir MainActivity.
+- VoiceCaptureService es un foreground service no exportado de tipo microphone,
+  con timeout de 60 segundos y START_NOT_STICKY.
+- La notificación «Escuchando…» solicita visibilidad inmediata y ofrece
+  Cancelar únicamente mientras la escucha puede detenerse.
+- El servicio reutiliza OnDeviceVoiceRecognizer, reconoce solo en el dispositivo,
+  ignora resultados parciales y no almacena audio ni transcripciones en logs.
+- Un único resultado final se guarda automáticamente mediante ReminderManager;
+  Room continúa siendo la fuente de verdad y publica la notificación normal.
+- Al comenzar «Guardando…» se libera el micrófono, se cancela el timeout y una
+  acción Cancelar antigua ya no puede interrumpir la escritura aceptada.
+- Las notificaciones temporales utilizan IDs negativos reservados para evitar
+  colisiones con los IDs positivos de Room.
+- Si faltan permisos, el widget abre el alias privado WidgetVoiceEntry, que
+  apunta a la única MainActivity y reutiliza el flujo visible de fase 5.
+- MainActivity valida el alias además de la acción, por lo que una aplicación
+  externa no puede activar el micrófono imitando el intent.
+- El widget declara targetCellWidth y targetCellHeight de una celda.
+- testDebugUnitTest, :app:compileDebugKotlin, :app:assembleDebug y lintDebug
+  terminan correctamente. Lint no presenta errores ni advertencias nuevas de
+  fase 6.
 
-Siguiente objetivo: Fase 6 — Widget
-- Añadir un widget de acceso rápido con una única acción clara de voz.
-- Abrir MainActivity y activar el flujo visible de voz ya existente.
-- No reconocer audio, guardar notas ni duplicar lógica desde el propio widget.
-- Mantener una sola actividad, un solo HomeViewModel y un solo controlador de
-  SpeechRecognizer.
-- Diseñar y auditar primero la integración mínima antes de escribir código.
+Qué incluye la Fase 7
+- ReminderNotificationPublisher expone los ids activos filtrando por el canal
+  de recordatorios, etiqueta nula e ids positivos; las notificaciones internas
+  negativas del servicio de voz quedan excluidas.
+- ReminderManager toma la primera instantánea del Flow de Room, publica las
+  notificaciones ausentes, cancela las huérfanas e ignora las coincidencias.
+- Un único Mutex protege crear, completar, restaurar y reconciliar para evitar
+  que una reconciliación resucite una nota completada.
+- MainActivity reconcilia al entrar en primer plano sin solapar trabajos y sin
+  mostrar errores de recuperación en la interfaz.
+- ReminderReconcileWorker ejecuta la misma reconciliación cada 15 minutos con
+  WorkManager, nombre único y ExistingPeriodicWorkPolicy.KEEP, sin restricciones.
+- BootCompletedReceiver valida exactamente BOOT_COMPLETED y encola una única
+  ejecución del mismo worker con ExistingWorkPolicy.KEEP.
+- El Manifest declara RECEIVE_BOOT_COMPLETED, no declara INTERNET y no usa
+  LOCKED_BOOT_COMPLETED.
+- testDebugUnitTest, :app:compileDebugKotlin, :app:assembleDebug y lintDebug
+  terminan correctamente. La matriz manual de recuperación se aplaza a las
+  fases 10 y 11 por decisión de producto.
+- La auditoría externa terminó sin hallazgos altos o medios y sin regresiones
+  en las fases 4, 5 o 6.
+- Queda para la fase 10 una prueba específica que ejecute simultáneamente una
+  reconciliación y completar o restaurar, para proteger el Mutex frente a
+  regresiones futuras.
 
-Antes de continuar, revisar AGENTS.md y los archivos actuales relacionados con
-MainActivity, HomeRoute, HomeViewModel, OnDeviceVoiceRecognizer, el Manifest y
-la configuración actual de notificaciones.
+Siguiente objetivo de implementación: Fase 8 — Idiomas
+- Localización inicial en español e inglés.
+- Selección automática según el idioma configurado en Android.
+- Sin selector interno ni persistencia propia del idioma.
+- Coherencia en interfaz, reconocimiento de voz, notificaciones y widget.
+- Diseñar la fase antes de modificar recursos o código.
+
+Después corresponderá la fase 9 — Apariencia y pulido visual
+- Paletas predefinidas y persistencia local mediante DataStore.
+- Mejora de la interfaz y revisión del diseño de los iconos.

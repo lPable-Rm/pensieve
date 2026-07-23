@@ -4,6 +4,9 @@ import com.mvppostit.pensieve.data.local.ReminderEntity
 import com.mvppostit.pensieve.data.repository.ReminderRepository
 import com.mvppostit.pensieve.notifications.ReminderNotifier
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Coordina las acciones de alto nivel sobre un recordatorio.
@@ -16,6 +19,8 @@ class ReminderManager(
     private val notificationPublisher: ReminderNotifier,
 ) {
 
+    private val mutationMutex = Mutex()
+
     fun observeReminders(): Flow<List<ReminderEntity>> = repository.observeReminders()
 
     /**
@@ -23,28 +28,50 @@ class ReminderManager(
      * notificación asociada.
      */
     suspend fun createReminder(text: String): ReminderEntity {
-        val reminder = repository.createReminder(text)
-        notificationPublisher.publish(reminder)
-        return reminder
+        return mutationMutex.withLock {
+            val reminder = repository.createReminder(text)
+            notificationPublisher.publish(reminder)
+            reminder
+        }
     }
 
     /**
      * Elimina la nota de Room y retira su notificación si existía.
      */
     suspend fun completeReminder(reminderId: Long): ReminderEntity? {
-        val completedReminder = repository.completeReminder(reminderId)
+        return mutationMutex.withLock {
+            val completedReminder = repository.completeReminder(reminderId)
 
-        // Cancelar también cuando la fila ya no existe limpia una posible
-        // notificación huérfana tras una interrupción entre Room y Android.
-        notificationPublisher.cancel(reminderId)
-        return completedReminder
+            // Cancelar también cuando la fila ya no existe limpia una posible
+            // notificación huérfana tras una interrupción entre Room y Android.
+            notificationPublisher.cancel(reminderId)
+            completedReminder
+        }
     }
 
     /**
      * Restaura la fila original y vuelve a publicar su recordatorio.
      */
     suspend fun restoreReminder(reminder: ReminderEntity) {
-        repository.restoreReminder(reminder)
-        notificationPublisher.publish(reminder)
+        mutationMutex.withLock {
+            repository.restoreReminder(reminder)
+            notificationPublisher.publish(reminder)
+        }
+    }
+
+    suspend fun reconcileNotifications() {
+        mutationMutex.withLock {
+            val reminders = repository.observeReminders().first()
+            val activeReminderIds = notificationPublisher.activeReminderIds()
+            val roomReminderIds = reminders.mapTo(mutableSetOf(), ReminderEntity::id)
+
+            reminders
+                .filterNot { reminder -> reminder.id in activeReminderIds }
+                .forEach(notificationPublisher::publish)
+
+            activeReminderIds
+                .filterNot { reminderId -> reminderId in roomReminderIds }
+                .forEach(notificationPublisher::cancel)
+        }
     }
 }

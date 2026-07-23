@@ -85,8 +85,8 @@ Ejecutar `connectedDebugAndroidTest` únicamente si existen pruebas instrumentad
 ## Compatibilidad y publicación
 
 - Comprobar API 36 y al menos API 31.
-- Dejar para fases 9 y 10 la matriz amplia de dispositivos físicos.
-- Anotar para fase 10 la declaración del foreground service de micrófono en Play Console y la demostración del flujo requerida por Google Play.
+- Dejar para las fases 10 y 11 la matriz amplia de dispositivos físicos.
+- Anotar para la fase 11 la declaración del foreground service de micrófono en Play Console y la demostración del flujo requerida por Google Play.
 
 ## Criterios de cierre
 

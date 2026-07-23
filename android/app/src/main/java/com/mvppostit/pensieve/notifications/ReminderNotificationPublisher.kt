@@ -61,6 +61,18 @@ class ReminderNotificationPublisher(
         notificationManager.notify(reminder.id.toInt(), notification)
     }
 
+    override fun activeReminderIds(): Set<Long> =
+        notificationManager.activeNotifications
+            .asSequence()
+            .filter { statusBarNotification ->
+                statusBarNotification.tag == null &&
+                    statusBarNotification.id > 0 &&
+                    statusBarNotification.notification.channelId ==
+                    ReminderNotificationChannel.CHANNEL_ID
+            }
+            .map { statusBarNotification -> statusBarNotification.id.toLong() }
+            .toSet()
+
     /**
      * Retira la notificación asociada a un recordatorio completado.
      */
@@ -110,6 +122,8 @@ class ReminderNotificationPublisher(
 /** Contrato mínimo que permite coordinar y probar las notificaciones. */
 interface ReminderNotifier {
     fun publish(reminder: ReminderEntity)
+
+    fun activeReminderIds(): Set<Long>
 
     fun cancel(reminderId: Long)
 }
