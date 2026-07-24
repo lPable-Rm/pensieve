@@ -1,0 +1,43 @@
+<resources>
+    <string name="new_reminder">Nova nota</string>
+    <string name="create_reminder_by_voice">Criar nota por voz</string>
+    <string name="complete_reminder">Concluir lembrete: %1$s</string>
+    <string name="reminder_completed">Lembrete concluído</string>
+    <string name="undo">Anular</string>
+    <string name="new_reminder_placeholder">Escreva um lembrete</string>
+    <string name="save_reminder">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="created_just_now">Agora</string>
+    <string name="reminder_load_failed">Não foi possível carregar as notas</string>
+    <string name="reminder_create_failed">Não foi possível guardar a nota</string>
+    <string name="reminder_complete_failed">Não foi possível concluir a nota</string>
+    <string name="reminder_restore_failed">Não foi possível anular a ação</string>
+    <string name="reminder_notification_channel_name">Lembretes ativos</string>
+    <string name="reminder_notification_channel_description">Mostra as notas pendentes da Pensieve</string>
+    <string name="voice_capture_notification_channel_name">Captura de voz</string>
+    <string name="voice_capture_notification_channel_description">Indica quando a Pensieve está a ouvir</string>
+    <string name="widget_voice_capture_name">Pensieve: gravar voz</string>
+    <string name="widget_voice_capture_description">Gravar lembrete</string>
+    <string name="complete_reminder_action">Concluído</string>
+    <string name="notification_permission_denied">Permita as notificações para manter este lembrete visível mesmo depois de fechar a Pensieve.</string>
+    <string name="voice_listening">A ouvir…</string>
+    <string name="voice_processing">A transcrever…</string>
+    <string name="voice_saving">A guardar…</string>
+    <string name="voice_stop_recording">Parar gravação</string>
+    <string name="voice_cancel">Cancelar</string>
+    <string name="voice_save_reminder">Guardar lembrete</string>
+    <string name="voice_retry">Tentar novamente</string>
+    <string name="voice_close">Fechar</string>
+    <string name="voice_open_settings">Abrir Definições</string>
+    <string name="voice_review_placeholder">Reveja o seu lembrete</string>
+    <plurals name="voice_elapsed_seconds">
+        <item quantity="one">%1$d segundo de gravação</item>
+        <item quantity="many">%1$d de segundos de gravação</item>
+        <item quantity="other">%1$d segundos de gravação</item>
+    </plurals>
+    <string name="voice_no_speech">Não foi detetada voz.</string>
+    <string name="voice_language_unavailable">O idioma não está disponível para o reconhecimento de voz local.</string>
+    <string name="voice_recognizer_unavailable">O reconhecimento de voz local não está disponível neste dispositivo.</string>
+    <string name="voice_permission_denied">Permita o acesso ao microfone para criar uma nota por voz.</string>
+    <string name="voice_temporary_failure">Não foi possível transcrever agora. Tente novamente.</string>
+</resources>

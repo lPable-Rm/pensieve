@@ -1,0 +1,43 @@
+<resources>
+    <string name="new_reminder">Nouvelle note</string>
+    <string name="create_reminder_by_voice">Créer une note à la voix</string>
+    <string name="complete_reminder">Terminer le rappel : %1$s</string>
+    <string name="reminder_completed">Rappel terminé</string>
+    <string name="undo">Annuler</string>
+    <string name="new_reminder_placeholder">Écrivez un rappel</string>
+    <string name="save_reminder">Enregistrer</string>
+    <string name="cancel">Annuler</string>
+    <string name="created_just_now">À l’instant</string>
+    <string name="reminder_load_failed">Impossible de charger les notes</string>
+    <string name="reminder_create_failed">Impossible d’enregistrer la note</string>
+    <string name="reminder_complete_failed">Impossible de terminer la note</string>
+    <string name="reminder_restore_failed">Impossible d’annuler l’action</string>
+    <string name="reminder_notification_channel_name">Rappels actifs</string>
+    <string name="reminder_notification_channel_description">Affiche les notes Pensieve en attente</string>
+    <string name="voice_capture_notification_channel_name">Enregistrement vocal</string>
+    <string name="voice_capture_notification_channel_description">Indique quand Pensieve est à l’écoute</string>
+    <string name="widget_voice_capture_name">Pensieve : enregistrer la voix</string>
+    <string name="widget_voice_capture_description">Enregistrer un rappel</string>
+    <string name="complete_reminder_action">Terminé</string>
+    <string name="notification_permission_denied">Autorisez les notifications pour que ce rappel reste visible même lorsque vous fermez Pensieve.</string>
+    <string name="voice_listening">Écoute…</string>
+    <string name="voice_processing">Transcription…</string>
+    <string name="voice_saving">Enregistrement…</string>
+    <string name="voice_stop_recording">Arrêter l’enregistrement</string>
+    <string name="voice_cancel">Annuler</string>
+    <string name="voice_save_reminder">Enregistrer le rappel</string>
+    <string name="voice_retry">Réessayer</string>
+    <string name="voice_close">Fermer</string>
+    <string name="voice_open_settings">Ouvrir les paramètres</string>
+    <string name="voice_review_placeholder">Vérifiez votre rappel</string>
+    <plurals name="voice_elapsed_seconds">
+        <item quantity="one">%1$d seconde d’enregistrement</item>
+        <item quantity="many">%1$d de secondes d’enregistrement</item>
+        <item quantity="other">%1$d secondes d’enregistrement</item>
+    </plurals>
+    <string name="voice_no_speech">Aucune voix détectée.</string>
+    <string name="voice_language_unavailable">La langue n’est pas disponible pour la reconnaissance vocale locale.</string>
+    <string name="voice_recognizer_unavailable">La reconnaissance vocale locale n’est pas disponible sur cet appareil.</string>
+    <string name="voice_permission_denied">Autorisez l’accès au microphone pour dicter une note.</string>
+    <string name="voice_temporary_failure">Impossible de transcrire pour le moment. Réessayez.</string>
+</resources>

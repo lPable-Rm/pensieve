@@ -1,0 +1,42 @@
+<resources>
+    <string name="new_reminder">Neue Notiz</string>
+    <string name="create_reminder_by_voice">Notiz per Sprache erstellen</string>
+    <string name="complete_reminder">Erinnerung erledigen: %1$s</string>
+    <string name="reminder_completed">Erinnerung erledigt</string>
+    <string name="undo">Rückgängig</string>
+    <string name="new_reminder_placeholder">Erinnerung eingeben</string>
+    <string name="save_reminder">Speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="created_just_now">Gerade eben</string>
+    <string name="reminder_load_failed">Notizen konnten nicht geladen werden</string>
+    <string name="reminder_create_failed">Notiz konnte nicht gespeichert werden</string>
+    <string name="reminder_complete_failed">Notiz konnte nicht erledigt werden</string>
+    <string name="reminder_restore_failed">Aktion konnte nicht rückgängig gemacht werden</string>
+    <string name="reminder_notification_channel_name">Aktive Erinnerungen</string>
+    <string name="reminder_notification_channel_description">Zeigt ausstehende Pensieve-Notizen</string>
+    <string name="voice_capture_notification_channel_name">Sprachaufnahme</string>
+    <string name="voice_capture_notification_channel_description">Zeigt an, wenn Pensieve zuhört</string>
+    <string name="widget_voice_capture_name">Pensieve: Sprache aufnehmen</string>
+    <string name="widget_voice_capture_description">Erinnerung aufnehmen</string>
+    <string name="complete_reminder_action">Erledigt</string>
+    <string name="notification_permission_denied">Aktiviere Benachrichtigungen, damit diese Erinnerung sichtbar bleibt, auch wenn du Pensieve schließt.</string>
+    <string name="voice_listening">Hört zu…</string>
+    <string name="voice_processing">Wird transkribiert…</string>
+    <string name="voice_saving">Wird gespeichert…</string>
+    <string name="voice_stop_recording">Aufnahme stoppen</string>
+    <string name="voice_cancel">Abbrechen</string>
+    <string name="voice_save_reminder">Erinnerung speichern</string>
+    <string name="voice_retry">Erneut versuchen</string>
+    <string name="voice_close">Schließen</string>
+    <string name="voice_open_settings">Einstellungen öffnen</string>
+    <string name="voice_review_placeholder">Erinnerung überprüfen</string>
+    <plurals name="voice_elapsed_seconds">
+        <item quantity="one">%1$d Sekunde Aufnahmezeit</item>
+        <item quantity="other">%1$d Sekunden Aufnahmezeit</item>
+    </plurals>
+    <string name="voice_no_speech">Keine Sprache erkannt.</string>
+    <string name="voice_language_unavailable">Die Sprache ist für die lokale Spracherkennung nicht verfügbar.</string>
+    <string name="voice_recognizer_unavailable">Die lokale Spracherkennung ist auf diesem Gerät nicht verfügbar.</string>
+    <string name="voice_permission_denied">Erlaube den Mikrofonzugriff, um eine Notiz per Sprache zu erstellen.</string>
+    <string name="voice_temporary_failure">Die Transkription ist gerade nicht möglich. Versuche es erneut.</string>
+</resources>
