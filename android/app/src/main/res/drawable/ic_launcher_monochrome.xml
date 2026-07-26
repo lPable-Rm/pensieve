@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Variante de una sola tinta que Android puede adaptar a su tema. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M 286,329 H 688 V 438 L 744,585 L 671,607 V 723 H 542 V 805 H 286 Z M 542,438 V 502 H 603 V 438 Z" />
+
+    <!-- Mantiene exactamente la misma geometría segura que el foreground. -->
+    <group android:translateY="44">
+        <group
+            android:pivotX="380"
+            android:pivotY="212.5"
+            android:rotation="-23">
+            <path
+                android:fillColor="#FF000000"
+                android:pathData="M 357,160 H 403 V 265 H 357 Z" />
+        </group>
+
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M 473,159 H 520 V 236 H 473 Z" />
+
+        <group
+            android:pivotX="617"
+            android:pivotY="212.5"
+            android:rotation="23">
+            <path
+                android:fillColor="#FF000000"
+                android:pathData="M 594,160 H 640 V 265 H 594 Z" />
+        </group>
+    </group>
+</vector>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Línea de voz decorativa: comunica grabación, pero no representa niveles reales. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="32dp"
+    android:viewportWidth="96"
+    android:viewportHeight="32">
+
+    <path
+        android:fillColor="@color/widget_recording"
+        android:pathData="M0,14 H6 V18 H0 Z M10,10 H14 V22 H10 Z M18,6 H22 V26 H18 Z M26,12 H30 V20 H26 Z M34,4 H38 V28 H34 Z M42,10 H46 V22 H42 Z M50,14 H54 V18 H50 Z M58,8 H62 V24 H58 Z M66,12 H70 V20 H66 Z M74,5 H78 V27 H74 Z M82,11 H86 V21 H82 Z M90,14 H96 V18 H90 Z" />
+
+</vector>

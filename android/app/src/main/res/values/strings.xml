@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Pensieve</string>
+    <string name="app_name" translatable="false">Nolvida</string>
     <string name="new_reminder">New note</string>
     <string name="create_reminder_by_voice">Create note by voice</string>
     <string name="complete_reminder">Complete reminder: %1$s</string>
@@ -14,16 +14,17 @@
     <string name="reminder_complete_failed">Could not complete the note</string>
     <string name="reminder_restore_failed">Could not undo the action</string>
     <string name="reminder_notification_channel_name">Active reminders</string>
-    <string name="reminder_notification_channel_description">Shows pending Pensieve notes</string>
+    <string name="reminder_notification_channel_description">Shows pending Nolvida notes</string>
     <string name="voice_capture_notification_channel_name">Voice capture</string>
-    <string name="voice_capture_notification_channel_description">Shows when Pensieve is listening</string>
-    <string name="widget_voice_capture_name">Pensieve: record voice</string>
+    <string name="voice_capture_notification_channel_description">Shows when Nolvida is listening</string>
+    <string name="widget_voice_capture_name">Nolvida: record voice</string>
     <string name="widget_voice_capture_description">Record reminder</string>
     <string name="complete_reminder_action">Done</string>
-    <string name="notification_permission_denied">Allow notifications to keep this reminder visible even when you close Pensieve.</string>
+    <string name="notification_permission_denied">Allow notifications to keep this reminder visible even when you close Nolvida.</string>
     <string name="voice_listening">Listening…</string>
-    <string name="voice_processing">Transcribing…</string>
-    <string name="voice_saving">Saving…</string>
+    <string name="voice_processing">Processing your voice…</string>
+    <string name="voice_saving">Saving your reminder…</string>
+    <string name="voice_saving_support">It will appear in a moment.</string>
     <string name="voice_stop_recording">Stop recording</string>
     <string name="voice_cancel">Cancel</string>
     <string name="voice_save_reminder">Save reminder</string>
@@ -40,4 +41,33 @@
     <string name="voice_recognizer_unavailable">On-device speech recognition is not available on this device.</string>
     <string name="voice_permission_denied">Allow microphone access to create a note by voice.</string>
     <string name="voice_temporary_failure">Could not transcribe right now. Try again.</string>
+    <string name="onboarding_capture_title">Get it out of your head</string>
+    <string name="onboarding_capture_body">Type or dictate a note. Nolvida will keep it visible until you tap Done.</string>
+    <string name="onboarding_visibility_title">Always visible</string>
+    <string name="onboarding_visibility_body">Your reminders stay in the notification shade until you tap Done.</string>
+    <string name="onboarding_widget_title">Speak without opening Nolvida</string>
+    <string name="onboarding_widget_body">Use the widget to speak from your home screen. Your reminder will be saved instantly.</string>
+    <string name="onboarding_widget_setup_title">Add the widget</string>
+    <string name="onboarding_widget_setup_body">Android will ask for confirmation to add it to your home screen.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_add_widget">Add widget</string>
+    <string name="onboarding_page_indicator">Page %1$d of %2$d</string>
+    <string name="onboarding_example_reminder">Buy bread</string>
+    <string name="widget_tap_to_speak">Tap to speak</string>
+    <string name="widget_recording">Recording…</string>
+    <string name="widget_recording_description">Recording. Tap to stop.</string>
+    <string name="appearance_open">Change appearance</string>
+    <string name="appearance_title">Appearance</string>
+    <string name="appearance_subtitle">Choose your preferred palette</string>
+    <string name="appearance_applies_immediately">The palette is applied instantly across the app and widget.</string>
+    <string name="palette_lavender">Lavender</string>
+    <string name="palette_petrol">Petrol green</string>
+    <string name="palette_deep_blue">Deep blue</string>
+    <string name="palette_soft_coral">Soft coral</string>
+    <string name="palette_grayscale">Grayscale</string>
+    <string name="palette_turquoise">Turquoise</string>
+    <string name="empty_reminders_title">Nothing pending</string>
+    <string name="empty_reminders_body">When you save a note, it will appear here and in your notifications.</string>
 </resources>

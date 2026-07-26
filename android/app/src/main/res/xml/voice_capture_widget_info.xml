@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Metadatos que permiten al launcher mostrar el widget como una unidad 1×1. -->
+<!-- Metadatos que permiten al launcher mostrar el widget como una unidad 3×1. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_voice_capture_description"
     android:initialLayout="@layout/widget_voice_capture"
+    android:previewLayout="@layout/widget_voice_capture_preview"
     android:minHeight="48dp"
-    android:minWidth="48dp"
+    android:minWidth="180dp"
     android:resizeMode="none"
     android:targetCellHeight="1"
-    android:targetCellWidth="1"
+    android:targetCellWidth="3"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen" />

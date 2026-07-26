@@ -1,6 +1,9 @@
 package com.mvppostit.pensieve.ui.home.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,9 +12,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,7 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -39,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import com.mvppostit.pensieve.R
 import com.mvppostit.pensieve.ui.home.VoiceInputError
 import com.mvppostit.pensieve.ui.home.VoiceInputState
+import com.mvppostit.pensieve.ui.theme.NolvidaRecording
 import kotlinx.coroutines.delay
 
 /**
@@ -102,19 +117,20 @@ private fun VoiceListeningContent(
     onStopRecording: () -> Unit,
 ) {
     val elapsedSeconds = rememberElapsedSeconds(state.startedAtMillis)
+    val stopDescription = stringResource(R.string.voice_stop_recording)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        VoiceProgressIndicator()
-        Spacer(modifier = Modifier.width(12.dp))
+        VoiceListeningIndicator()
+        Spacer(modifier = Modifier.width(8.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = androidx.compose.ui.res.stringResource(R.string.voice_listening),
+                text = stringResource(R.string.voice_listening),
                 modifier = Modifier.voiceStatusLiveRegion(),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
@@ -134,9 +150,63 @@ private fun VoiceListeningContent(
             VoiceElapsedTime(elapsedSeconds)
         }
 
-        TextButton(onClick = onStopRecording) {
-            Text(text = androidx.compose.ui.res.stringResource(R.string.voice_stop_recording))
+        // El botón conserva un tamaño cómodo para tocarlo, aunque el icono sea pequeño.
+        IconButton(
+            onClick = onStopRecording,
+            modifier = Modifier.semantics {
+                contentDescription = stopDescription
+            },
+        ) {
+            Surface(
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer,
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_widget_stop),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = NolvidaRecording,
+                    )
+                }
+            }
         }
+    }
+}
+
+/**
+ * Indicador fijo de escucha.
+ *
+ * El punto rojo dice "el micrófono está activo". La forma de barras solo
+ * decora la superficie: no pretende medir el volumen real del micrófono.
+ */
+@Composable
+private fun VoiceListeningIndicator() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Surface(
+            modifier = Modifier.size(40.dp),
+            shape = CircleShape,
+            color = NolvidaRecording.copy(alpha = 0.12f),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clip(CircleShape)
+                        .background(NolvidaRecording),
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            painter = painterResource(R.drawable.ic_widget_waveform),
+            contentDescription = null,
+            modifier = Modifier
+                .width(48.dp)
+                .height(20.dp),
+            tint = NolvidaRecording,
+        )
     }
 }
 
@@ -151,15 +221,20 @@ private fun VoiceProcessingContent(onCancel: () -> Unit) {
         VoiceProgressIndicator()
         Spacer(modifier = Modifier.width(12.dp))
         Text(
-            text = androidx.compose.ui.res.stringResource(R.string.voice_processing),
+            text = stringResource(R.string.voice_processing),
             modifier = Modifier
                 .weight(1f)
                 .voiceStatusLiveRegion(),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold,
         )
-        TextButton(onClick = onCancel) {
-            Text(text = androidx.compose.ui.res.stringResource(R.string.voice_cancel))
+        TextButton(
+            onClick = onCancel,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        ) {
+            Text(text = stringResource(R.string.voice_cancel))
         }
     }
 }
@@ -173,20 +248,26 @@ private fun VoiceReviewContent(
 ) {
     val canSave = text.trim().isNotEmpty()
 
-    Column(modifier = Modifier.padding(12.dp)) {
+    Column(
+        modifier = Modifier
+            // En horizontal el IME puede dejar una ventana muy baja. Solo la
+            // revisión editable necesita scroll para mantener sus acciones.
+            .verticalScroll(rememberScrollState())
+            .padding(12.dp),
+    ) {
         TextField(
             value = text,
             onValueChange = onTextChange,
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
-                Text(text = androidx.compose.ui.res.stringResource(R.string.voice_review_placeholder))
+                Text(text = stringResource(R.string.voice_review_placeholder))
             },
             minLines = 2,
             maxLines = 4,
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+            keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
             ),
-            keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+            keyboardActions = KeyboardActions(
                 onDone = {
                     if (canSave) onSave()
                 },
@@ -194,9 +275,17 @@ private fun VoiceReviewContent(
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
             ),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_voice_edit),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            },
         )
 
         Row(
@@ -205,15 +294,20 @@ private fun VoiceReviewContent(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.End,
         ) {
-            TextButton(onClick = onCancel) {
-                Text(text = androidx.compose.ui.res.stringResource(R.string.voice_cancel))
+            TextButton(
+                onClick = onCancel,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
+            ) {
+                Text(text = stringResource(R.string.voice_cancel))
             }
 
             FilledTonalButton(
                 onClick = onSave,
                 enabled = canSave,
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(R.string.voice_save_reminder))
+                Text(text = stringResource(R.string.voice_save_reminder))
             }
         }
     }
@@ -227,14 +321,40 @@ private fun VoiceSavingContent() {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        VoiceProgressIndicator()
+        VoiceSavingIndicator()
         Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = androidx.compose.ui.res.stringResource(R.string.voice_saving),
-            modifier = Modifier.voiceStatusLiveRegion(),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-        )
+        Column {
+            Text(
+                text = stringResource(R.string.voice_saving),
+                modifier = Modifier.voiceStatusLiveRegion(),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = stringResource(R.string.voice_saving_support),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/** El check convierte el mensaje de guardado en una confirmación fácil de reconocer. */
+@Composable
+private fun VoiceSavingIndicator() {
+    Surface(
+        modifier = Modifier.size(40.dp),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.primary,
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                painter = painterResource(R.drawable.ic_voice_check),
+                contentDescription = null,
+                modifier = Modifier.size(22.dp),
+                tint = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
     }
 }
 
@@ -265,7 +385,7 @@ private fun VoiceErrorContent(
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
-            text = androidx.compose.ui.res.stringResource(message),
+            text = stringResource(message),
             modifier = Modifier.voiceStatusLiveRegion(),
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -276,20 +396,25 @@ private fun VoiceErrorContent(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.End,
         ) {
-            TextButton(onClick = onCancel) {
-                Text(text = androidx.compose.ui.res.stringResource(R.string.voice_close))
+            TextButton(
+                onClick = onCancel,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
+            ) {
+                Text(text = stringResource(R.string.voice_close))
             }
 
             when {
                 error is VoiceInputError.PermissionDenied && error.canOpenSettings -> {
                     FilledTonalButton(onClick = onOpenSettings) {
-                        Text(text = androidx.compose.ui.res.stringResource(R.string.voice_open_settings))
+                        Text(text = stringResource(R.string.voice_open_settings))
                     }
                 }
 
                 canRetry -> {
                     FilledTonalButton(onClick = onRetry) {
-                        Text(text = androidx.compose.ui.res.stringResource(R.string.voice_retry))
+                        Text(text = stringResource(R.string.voice_retry))
                     }
                 }
             }
@@ -304,6 +429,7 @@ private fun VoiceProgressIndicator() {
         modifier = Modifier
             .size(28.dp)
             .clearAndSetSemantics { },
+        color = MaterialTheme.colorScheme.onSurface,
         strokeWidth = 3.dp,
     )
 }

@@ -1,6 +1,6 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 25 de julio de 2026
+Fecha: 26 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
@@ -162,7 +162,41 @@ Qué incluye la Fase 8
 - La matriz manual de los seis idiomas y del fallback inglés se aplaza por
   decisión de producto a las fases 10 y 11.
 
-Siguiente objetivo de implementación: Fase 9 — Apariencia y pulido visual
-- Paletas predefinidas y persistencia local mediante DataStore.
-- Mejora de la interfaz y revisión del diseño de los iconos.
-- Diseñar la fase antes de modificar recursos o código.
+Fase 9 — Apariencia y pulido visual
+- La fase está completada y auditada; las subfases 9.0 a 9.10 están
+  implementadas. Incluyen referencias y textos,
+  onboarding, widget 3 × 1, Home, tarjetas y estado vacío, entrada manual, barra
+  de voz, seis paletas persistidas e identidad e iconos de Nolvida.
+- La auditoría 9.9 está completada. No encontró hallazgos altos ni regresiones
+  en privacidad: no hay INTERNET, telemetría, secretos, logs sensibles ni audio
+  persistido.
+- La auditoría registró inicialmente cuatro hallazgos medios:
+  contraste de varias paletas, insets del onboarding, desbordamiento del estado
+  vacío y revisión de voz tapable por el teclado.
+- La subfase 9.10 corrigió los cuatro hallazgos: roles semánticos y tests de
+  contraste para seis paletas, safeDrawing en onboarding, estado vacío
+  desplazable y un único imePadding con scroll acotado en revisión de voz. La
+  segunda auditoría terminó con 0 hallazgos altos y 0 medios.
+- Las comprobaciones finales terminaron correctamente: 15 tests unitarios,
+  compileDebugKotlin, compileDebugAndroidTestKotlin, assembleDebug y lintDebug.
+  Las 29 pruebas instrumentadas compilaron, pero no se ejecutaron en emulador.
+- Lint conserva 19 advertencias: 11 de versiones o SDK, 6 colores de plantilla
+  sin uso y 2 iconos launcher antiguos duplicados. Las ocho advertencias propias
+  de recursos forman parte de la limpieza acotada de 9.10; no se actualizarán
+  dependencias para silenciar las otras once.
+- Las observaciones bajas incluyen carreras de actualización visual del widget,
+  posible estado grabando obsoleto tras matar el proceso, cobertura específica,
+  código de plantilla y comentarios desactualizados.
+- La guía guias/fase_9/FASE_9_10_CORRECCIONES_AUDITORIA.md registra el cierre
+  de los cuatro hallazgos medios y la deuda baja trasladada a fase 10.
+- Los maestros de diseño no se modifican ni forman parte del AAB. Los materiales
+  de Google Play se prepararán por separado en fase 11.
+
+Siguiente objetivo de implementación: Fase 10
+- Ejecutar las matrices manuales aplazadas de las fases 6 a 9 en API 31 y 36.
+- Añadir la prueba específica de concurrencia entre completar o restaurar y
+  reconciliar.
+- Revisar TalkBack, teclado real, texto grande, orientación horizontal,
+  rendimiento y estados de error.
+- Resolver o aceptar expresamente la deuda baja documentada, sin ampliar el
+  producto.

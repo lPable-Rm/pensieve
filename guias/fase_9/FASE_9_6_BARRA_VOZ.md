@@ -11,8 +11,7 @@ dentro de la pantalla principal sin cambiar su máquina de estados.
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/components/VoiceInputBar.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeUiState.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeViewModel.kt
-diseño/flujodevoz.png
-diseño/paletaDeColores.png
+diseño/04_flujo_voz.png
 ```
 
 ## Estados

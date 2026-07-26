@@ -1,13 +1,25 @@
 package com.mvppostit.pensieve.ui.home.components
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.test.platform.app.InstrumentationRegistry
+import com.mvppostit.pensieve.R
 import com.mvppostit.pensieve.ui.home.VoiceInputError
 import com.mvppostit.pensieve.ui.home.VoiceInputState
 import com.mvppostit.pensieve.ui.theme.PensieveTheme
@@ -23,14 +35,16 @@ class VoiceInputBarTest {
 
     @Test
     fun listening_showsThePartialAndTheStopAction() {
+        var stopClicks = 0
         setVoiceInputContent(
-            VoiceInputState.Listening(
+            state = VoiceInputState.Listening(
                 partialText = "Comprar pan",
                 startedAtMillis = System.currentTimeMillis() + 60_000,
             ),
+            onStopRecording = { stopClicks += 1 },
         )
 
-        composeTestRule.onNodeWithText("Escuchando…")
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_listening))
             .assertIsDisplayed()
             .assert(hasPoliteLiveRegion)
         composeTestRule.onNodeWithText("Comprar pan")
@@ -38,7 +52,13 @@ class VoiceInputBarTest {
             .assert(isHiddenFromAccessibility)
             .assert(hasNoLiveRegion)
         composeTestRule.onNodeWithText("0:00").assert(hasNoLiveRegion)
-        composeTestRule.onNodeWithText("Detener grabación").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithContentDescription(stringResource(R.string.voice_stop_recording))
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.runOnIdle {
+            assertEquals(1, stopClicks)
+        }
     }
 
     @Test
@@ -49,10 +69,10 @@ class VoiceInputBarTest {
             onCancel = { cancelClicks += 1 },
         )
 
-        composeTestRule.onNodeWithText("Transcribiendo…")
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_processing))
             .assertIsDisplayed()
             .assert(hasPoliteLiveRegion)
-        composeTestRule.onNodeWithText("Cancelar").performClick()
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_cancel)).performClick()
         composeTestRule.runOnIdle {
             assertEquals(1, cancelClicks)
         }
@@ -65,16 +85,58 @@ class VoiceInputBarTest {
         composeTestRule.onNodeWithText("Llamar al taller")
             .assertIsDisplayed()
             .assert(hasNoLiveRegion)
-        composeTestRule.onNodeWithText("Guardar recordatorio").assertIsDisplayed()
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_save_reminder))
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun review_actionsRemainReachableWithLargeTextAndLittleHeight() {
+        composeTestRule.setContent {
+            val currentDensity = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(
+                    density = currentDensity.density,
+                    fontScale = 1.8f,
+                ),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(360.dp)
+                        .height(160.dp),
+                ) {
+                    PensieveTheme {
+                        VoiceInputBar(
+                            state = VoiceInputState.Review(
+                                "Comprar leche, huevos y pan integral para mañana",
+                            ),
+                            onStopRecording = {},
+                            onTextChange = {},
+                            onSave = {},
+                            onCancel = {},
+                            onRetry = {},
+                            onOpenSettings = {},
+                        )
+                    }
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_save_reminder))
+            .performScrollTo()
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_cancel))
+            .assertIsDisplayed()
     }
 
     @Test
     fun saving_showsAVisibleProgressState() {
         setVoiceInputContent(VoiceInputState.Saving("Llamar al taller"))
 
-        composeTestRule.onNodeWithText("Guardando…")
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_saving))
             .assertIsDisplayed()
             .assert(hasPoliteLiveRegion)
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_saving_support))
+            .assertIsDisplayed()
     }
 
     @Test
@@ -85,11 +147,14 @@ class VoiceInputBarTest {
             ),
         )
 
-        composeTestRule.onNodeWithText("Permite el micrófono para crear una nota por voz.")
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_permission_denied))
             .assert(hasPoliteLiveRegion)
-        composeTestRule.onNodeWithText("Abrir ajustes").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Cerrar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Reintentar").assertDoesNotExist()
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_open_settings))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_close))
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_retry))
+            .assertDoesNotExist()
     }
 
     @Test
@@ -102,7 +167,7 @@ class VoiceInputBarTest {
             onRetry = { retryClicks += 1 },
         )
 
-        composeTestRule.onNodeWithText("Reintentar")
+        composeTestRule.onNodeWithText(stringResource(R.string.voice_retry))
             .assertIsDisplayed()
             .performClick()
         composeTestRule.runOnIdle {
@@ -112,6 +177,7 @@ class VoiceInputBarTest {
 
     private fun setVoiceInputContent(
         state: VoiceInputState,
+        onStopRecording: () -> Unit = {},
         onCancel: () -> Unit = {},
         onRetry: () -> Unit = {},
     ) {
@@ -119,7 +185,7 @@ class VoiceInputBarTest {
             PensieveTheme {
                 VoiceInputBar(
                     state = state,
-                    onStopRecording = {},
+                    onStopRecording = onStopRecording,
                     onTextChange = {},
                     onSave = {},
                     onCancel = onCancel,
@@ -129,6 +195,10 @@ class VoiceInputBarTest {
             }
         }
     }
+
+    /** Usa el idioma real del dispositivo para que la prueba no dependa del español. */
+    private fun stringResource(resourceId: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId)
 
     private companion object {
         val hasPoliteLiveRegion = SemanticsMatcher.expectValue(

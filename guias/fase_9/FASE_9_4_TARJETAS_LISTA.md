@@ -12,6 +12,9 @@ android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeScreen.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeUiState.kt
 android/app/src/main/res/values*/strings.xml
 localizacion/TRADUCCIONES_FASE_9.csv
+diseño/02_estado_vacio.png
+diseño/05_snackbar_completado.png
+diseño/06_animacion_salida_tarjeta.png
 ```
 
 ## Implementación
@@ -31,8 +34,9 @@ Título: Nada pendiente
 Cuerpo: Cuando guardes un recado, aparecerá aquí y en tus notificaciones.
 ```
 
-El estado vacío no añade otro botón: las acciones inferiores ya permiten crear
-por texto o voz.
+La tarjeta `Toca para hablar` del estado vacío es una acción real, aparece solo
+en ese estado y reutiliza el mismo callback de voz que el botón inferior. No
+añade estado ni lógica de captura propios.
 
 ## Calidad
 

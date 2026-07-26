@@ -409,6 +409,8 @@ class HomeViewModelErrorTest {
         override fun publish(reminder: ReminderEntity) = Unit
 
         override fun cancel(reminderId: Long) = Unit
+
+        override fun activeReminderIds(): Set<Long> = emptySet()
     }
 
     private class FakeReminderDao(

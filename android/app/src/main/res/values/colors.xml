@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="launcher_background">#FFFFFFFF</color>
+
+    <!-- Valores lavanda de respaldo; RemoteViews aplica la paleta elegida en ejecución. -->
+    <color name="widget_lavender_primary">#FF7C3AED</color>
+    <color name="widget_lavender_background">#FFFAF9FF</color>
+    <color name="widget_lavender_border">#FFE1DAFF</color>
+    <color name="widget_lavender_circle">#FFE7E1FF</color>
+    <!-- El rojo original identifica la acción y la onda de grabación. -->
+    <color name="widget_recording">#FFE5484D</color>
+    <!-- Variante más oscura para que el texto pequeño supere 4.5:1. -->
+    <color name="widget_recording_text">#FFC62828</color>
+    <color name="widget_recording_background">#FFFFF8F8</color>
+    <color name="widget_recording_border">#FFFFD9D9</color>
+    <color name="widget_recording_circle">#FFFFE1E1</color>
+    <color name="widget_text_primary">#FF172033</color>
+    <color name="widget_text_secondary">#FF596275</color>
 </resources>

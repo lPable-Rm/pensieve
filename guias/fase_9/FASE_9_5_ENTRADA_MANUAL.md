@@ -13,6 +13,7 @@ android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeUiState.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeViewModel.kt
 android/app/src/main/res/drawable/ic_add.xml
 android/app/src/main/res/drawable/ic_mic.xml
+diseño/03_entrada_manual.png
 ```
 
 ## Implementación

@@ -3,6 +3,7 @@ package com.mvppostit.pensieve
 import android.content.Context
 import androidx.room.Room
 import com.mvppostit.pensieve.data.local.PensieveDatabase
+import com.mvppostit.pensieve.data.preferences.AppPreferences
 import com.mvppostit.pensieve.data.repository.ReminderRepository
 import com.mvppostit.pensieve.notifications.ReminderNotificationPublisher
 import com.mvppostit.pensieve.reminders.ReminderManager
@@ -15,6 +16,9 @@ import com.mvppostit.pensieve.reminders.ReminderManager
  * crear conexiones a la base de datos cada vez que se muestra la pantalla.
  */
 class AppContainer(context: Context) {
+
+    /** Preferencias locales compartidas por toda la aplicación. */
+    val appPreferences = AppPreferences(context.applicationContext)
 
     private val database = Room.databaseBuilder(
         context.applicationContext,

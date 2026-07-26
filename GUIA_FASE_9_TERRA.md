@@ -1,6 +1,8 @@
 # Fase 9 — Índice de implementación con ChatGPT 5.6 Terra
 
-Estado: **diseñada y pendiente de implementación**.
+Estado: **completada y auditada**. Las subfases 9.0 a 9.10 están implementadas;
+los cuatro hallazgos medios de 9.9 se corrigieron y la segunda auditoría terminó
+sin hallazgos altos o medios. La matriz manual continúa en las fases 10 y 11.
 
 ## Objetivo
 
@@ -23,6 +25,7 @@ Después del onboarding, Nolvida continúa teniendo una sola pantalla principal.
 
 | Subfase | Elemento | Guía |
 |---|---|---|
+| 9.0 | Preparación de referencias y textos | [FASE_9_0_PREPARACION_VISUAL.md](guias/fase_9/FASE_9_0_PREPARACION_VISUAL.md) |
 | 9.1 | Marca visible, sistema base y onboarding | [FASE_9_1_MARCA_ONBOARDING.md](guias/fase_9/FASE_9_1_MARCA_ONBOARDING.md) |
 | 9.2 | Widget rectangular en reposo y grabando | [FASE_9_2_WIDGET.md](guias/fase_9/FASE_9_2_WIDGET.md) |
 | 9.3 | Estructura y cabecera de la pantalla principal | [FASE_9_3_PANTALLA_PRINCIPAL.md](guias/fase_9/FASE_9_3_PANTALLA_PRINCIPAL.md) |
@@ -32,6 +35,7 @@ Después del onboarding, Nolvida continúa teniendo una sola pantalla principal.
 | 9.7 | Selector de paletas y persistencia | [FASE_9_7_PALETAS.md](guias/fase_9/FASE_9_7_PALETAS.md) |
 | 9.8 | Iconos, launcher y superficies del sistema | [FASE_9_8_ICONOS.md](guias/fase_9/FASE_9_8_ICONOS.md) |
 | 9.9 | Auditoría visual y técnica | [FASE_9_9_AUDITORIA.md](guias/fase_9/FASE_9_9_AUDITORIA.md) |
+| 9.10 | Correcciones de la auditoría | [FASE_9_10_CORRECCIONES_AUDITORIA.md](guias/fase_9/FASE_9_10_CORRECCIONES_AUDITORIA.md) |
 
 Implementar, comprobar y revisar una sola subfase cada vez.
 
@@ -48,8 +52,9 @@ Implementar, comprobar y revisar una sola subfase cada vez.
 - Sin degradados o animaciones complejas si un color plano y una transición
   breve comunican lo mismo.
 
-Las imágenes de `diseño/` son referencias de jerarquía y color, no
-especificaciones literales. No deben modificarse.
+Las imágenes actuales de `diseño/` están inventariadas en la guía 9.0. Son
+referencias de jerarquía y color, no especificaciones literales. Los archivos
+de `diseño/diseñoAntiguo/` no deben usarse para implementar esta fase.
 
 ## Paletas aprobadas
 
@@ -117,10 +122,13 @@ Solo se muestra en un inicio ordinario cuando todavía no se ha completado:
 
 No solicita permisos. El fallback privado iniciado desde el widget tiene
 prioridad sobre el onboarding para poder preparar micrófono y notificaciones.
+Los botones usan color plano, los puntos indican la página y no se implementan
+los cuadrados decorativos `1` y `2` del boceto. El widget se describe como una
+acción disponible desde la pantalla de inicio.
 
 ## Widget aprobado
 
-- Tamaño fijo `2 × 1`.
+- Tamaño fijo `3 × 1`.
 - Reposo: micrófono, `Nolvida` y `Toca para hablar`.
 - Grabando: indicador rojo, `Grabando…`, línea de voz estática y control de
   detención.
@@ -134,7 +142,7 @@ automático ya auditados.
 
 ## Localización
 
-Antes de añadir textos de fase 9, la subfase 9.1 crea:
+Antes de añadir textos de fase 9, la subfase 9.0 crea:
 
 ```text
 localizacion/TRADUCCIONES_FASE_9.csv
@@ -219,7 +227,7 @@ La fase 9 solo puede cerrarse cuando:
 
 - Nolvida es la única marca visible;
 - el onboarding no reaparece después de completarlo;
-- el widget `2 × 1` refleja reposo y grabación sin abrir la aplicación;
+- el widget `3 × 1` refleja reposo y grabación sin abrir la aplicación;
 - los componentes mantienen todos los flujos anteriores;
 - las seis paletas se guardan y se aplican a app y widget;
 - los iconos han sido aprobados;

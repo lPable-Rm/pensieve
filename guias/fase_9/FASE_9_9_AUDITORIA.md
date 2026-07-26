@@ -1,5 +1,8 @@
 # Fase 9.9 — Auditoría
 
+Estado: **completada**. Los cuatro hallazgos medios se corrigieron en 9.10 y la
+segunda auditoría terminó sin hallazgos altos o medios.
+
 ## Objetivo
 
 Auditar la fase 9 completa sin corregir hallazgos durante la misma revisión.
@@ -15,7 +18,7 @@ Auditar la fase 9 completa sin corregir hallazgos durante la misma revisión.
 
 ### Widget
 
-- Tamaño `2 × 1` y `RemoteViews`.
+- Tamaño `3 × 1` y `RemoteViews`.
 - Estados reposo y grabando.
 - Segunda pulsación cancela solo antes de guardar.
 - Sin actualizaciones continuas, Glance o onda real.
@@ -73,3 +76,16 @@ Documentar para fases 10 y 11:
 Si no existen hallazgos altos o medios, actualizar `AGENTS.md` y
 `CONTEXTO_MANANA.txt` con el cierre. Si hay correcciones, crear una subguía
 9.10 específica y mantener la fase abierta.
+
+## Resultado registrado
+
+La auditoría terminó con:
+
+- `0` hallazgos altos;
+- `4` hallazgos medios;
+- observaciones bajas de robustez, limpieza, documentación y cobertura;
+- compilación, ensamblado, tests y lint completados sin errores.
+
+Los cuatro bloqueantes están corregidos y verificados en
+[FASE_9_10_CORRECCIONES_AUDITORIA.md](FASE_9_10_CORRECCIONES_AUDITORIA.md).
+Las observaciones bajas permanecen documentadas para la fase 10.

@@ -1,10 +1,23 @@
 package com.mvppostit.pensieve.ui.home
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.test.platform.app.InstrumentationRegistry
+import com.mvppostit.pensieve.R
 import com.mvppostit.pensieve.ui.theme.PensieveTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -26,7 +39,9 @@ class HomeScreenAccessibilityTest {
             onVoiceClick = { voiceClicks += 1 },
         )
 
-        composeTestRule.onNodeWithContentDescription("Crear nota por voz")
+        composeTestRule.onNodeWithContentDescription(
+            stringResource(R.string.create_reminder_by_voice),
+        )
             .assertIsNotEnabled()
             .performClick()
         composeTestRule.runOnIdle {
@@ -42,8 +57,46 @@ class HomeScreenAccessibilityTest {
             onVoiceClick = { voiceClicks += 1 },
         )
 
-        composeTestRule.onNodeWithContentDescription("Crear nota por voz")
+        composeTestRule.onNodeWithContentDescription(
+            stringResource(R.string.create_reminder_by_voice),
+        )
             .assertIsEnabled()
+            .performClick()
+        composeTestRule.runOnIdle {
+            assertEquals(1, voiceClicks)
+        }
+    }
+
+    @Test
+    fun emptyState_voiceActionRemainsReachableWithLargeTextAndLittleHeight() {
+        var voiceClicks = 0
+
+        composeTestRule.setContent {
+            val currentDensity = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(
+                    density = currentDensity.density,
+                    fontScale = 1.8f,
+                ),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(360.dp)
+                        .height(480.dp),
+                ) {
+                    PensieveTheme {
+                        HomeScreen(
+                            uiState = HomeUiState(),
+                            onVoiceNoteClick = { voiceClicks += 1 },
+                        )
+                    }
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(stringResource(R.string.widget_tap_to_speak))
+            .performScrollTo()
+            .assertIsDisplayed()
             .performClick()
         composeTestRule.runOnIdle {
             assertEquals(1, voiceClicks)
@@ -63,4 +116,7 @@ class HomeScreenAccessibilityTest {
             }
         }
     }
+
+    private fun stringResource(resourceId: Int): String =
+        InstrumentationRegistry.getInstrumentation().targetContext.getString(resourceId)
 }

@@ -11,11 +11,12 @@ añadir controles o comportamientos.
 android/app/src/main/java/com/mvppostit/pensieve/MainActivity.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/home/HomeScreen.kt
 android/app/src/main/java/com/mvppostit/pensieve/ui/theme/
-diseño/pantallaApp1.1.png
+diseño/02_estado_vacio.png
+diseño/03_entrada_manual.png
+diseño/logo_nolvida.svg
 ```
 
-La imagen solo orienta sobre proporciones, tarjetas y jerarquía. Ignorar
-buscador, avatar, selección múltiple y cualquier función que no exista.
+Las imágenes solo orientan sobre proporciones, tarjetas y jerarquía.
 
 ## Implementación
 
@@ -29,9 +30,9 @@ buscador, avatar, selección múltiple y cualquier función que no exista.
    `ui/home/components/NolvidaHeader.kt`. Es un elemento independiente y deja
    `HomeScreen.kt` centrado en coordinar la pantalla.
 5. Cabecera:
-   - marca visual sencilla;
+   - símbolo aprobado tintado con la paleta activa;
    - nombre `Nolvida` como heading;
-   - sin perfil, buscador o botones ficticios.
+   - una única acción real de apariencia.
 6. Mantener la barra de voz sobre la lista y las acciones de creación en la
    parte inferior.
 
@@ -39,7 +40,7 @@ buscador, avatar, selección múltiple y cualquier función que no exista.
 
 - No cambiar callbacks, `HomeUiState`, ViewModel, Room o Scaffold.
 - No crear una barra superior genérica ni Navigation Compose.
-- No añadir imágenes decorativas o un logo final todavía.
+- No añadir controles decorativos ni otra acción a la cabecera.
 - No introducir dimensiones globales si solo se usan en un componente.
 
 ## Comprobaciones

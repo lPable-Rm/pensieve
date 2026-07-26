@@ -1,25 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    El layout no contiene texto ni controles secundarios: todo el widget es
-    una única acción de voz y el proveedor conecta el clic al PendingIntent.
+    Un único RemoteViews contiene los dos estados. El proveedor solo alterna
+    su visibilidad y cambia el PendingIntent del clic completo.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_voice_capture_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_voice_background"
+    android:background="@android:color/transparent"
     android:clickable="true"
-    android:contentDescription="@string/widget_voice_capture_description"
+    android:contentDescription="@string/widget_tap_to_speak"
     android:focusable="true"
-    android:foregroundGravity="center"
-    android:gravity="center"
-    android:padding="8dp">
+    android:padding="2dp">
 
-    <ImageView
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:contentDescription="@null"
-        android:importantForAccessibility="no"
-        android:src="@drawable/ic_mic" />
+    <!-- Estado normal: iniciar la captura ocupa todo el widget. -->
+    <LinearLayout
+        android:id="@+id/widget_voice_capture_idle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_voice_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <FrameLayout
+            android:id="@+id/widget_voice_capture_idle_mic_container"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/widget_voice_mic_background"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/widget_voice_capture_idle_mic_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_mic"
+                android:tint="@color/widget_lavender_primary" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/app_name"
+                android:textColor="@color/widget_text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/widget_tap_to_speak"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/widget_voice_capture_idle_logo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_nolvida" />
+    </LinearLayout>
+
+    <!-- Estado de escucha: el mismo clic envía ACTION_CANCEL_CAPTURE. -->
+    <LinearLayout
+        android:id="@+id/widget_voice_capture_recording"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_voice_recording_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/widget_voice_recording_circle"
+            android:padding="9dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_widget_stop" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/app_name"
+                android:textColor="@color/widget_text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/widget_recording"
+                android:textColor="@color/widget_recording_text"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="16dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_widget_waveform" />
+
+        <ImageView
+            android:id="@+id/widget_voice_capture_recording_logo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_nolvida" />
+    </LinearLayout>
 
 </FrameLayout>

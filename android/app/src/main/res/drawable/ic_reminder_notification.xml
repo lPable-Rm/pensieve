@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Android interpreta los iconos pequeños de notificación como una silueta.
-    Esta forma representa una nota pendiente y usa blanco opaco.
+    La versión blanca y sencilla del símbolo identifica a Nolvida sin color.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
 
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M4,3h16v14l-4,4H4V3z" />
+        android:fillType="evenOdd"
+        android:pathData="M 286,329 H 688 V 438 L 744,585 L 671,607 V 723 H 542 V 805 H 286 Z M 542,438 V 502 H 603 V 438 Z" />
+
+    <group
+        android:pivotX="380"
+        android:pivotY="212.5"
+        android:rotation="-23">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M 357,160 H 403 V 265 H 357 Z" />
+    </group>
+
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M 473,159 H 520 V 236 H 473 Z" />
+
+    <group
+        android:pivotX="617"
+        android:pivotY="212.5"
+        android:rotation="23">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M 594,160 H 640 V 265 H 594 Z" />
+    </group>
 </vector>

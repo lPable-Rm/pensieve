@@ -5,19 +5,17 @@
 Unificar la identidad gráfica de Nolvida en launcher, aplicación, widget y
 notificaciones sin introducir iconos decorativos.
 
-## Punto de aprobación obligatorio
+## Aprobación completada
 
-Antes de reemplazar el launcher, presentar al usuario propuestas simples del
-símbolo de Nolvida y esperar su elección. Si no existe una propuesta aprobada,
-no inventar una como cambio definitivo.
+El usuario ha aprobado el símbolo geométrico disponible en:
 
-El símbolo debe:
+```text
+diseño/logo_nolvida.svg
+diseño/logo_nolvida_monocromo.svg
+```
 
-- ser original y reconocible a tamaño pequeño;
-- funcionar en color y monocromo;
-- evitar referencias protegidas a Harry Potter;
-- comunicar recuerdo, descarga mental o visibilidad sin parecer calendario;
-- conservar una silueta clara sobre distintos fondos.
+Ambos maestros son monocromos y permiten aplicar el color de la paleta sin
+generar seis copias del logo.
 
 ## Inspeccionar
 
@@ -30,6 +28,10 @@ android/app/src/main/AndroidManifest.xml
 android/app/src/main/java/com/mvppostit/pensieve/notifications/
 android/app/src/main/java/com/mvppostit/pensieve/voice/VoiceCaptureService.kt
 android/app/src/main/res/xml/voice_capture_widget_info.xml
+diseño/07_notificacion_nativa.png
+diseño/08_widget_reposo_grabando.png
+diseño/logo_nolvida.svg
+diseño/logo_nolvida_monocromo.svg
 ```
 
 ## Implementación tras aprobación

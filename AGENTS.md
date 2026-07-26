@@ -388,15 +388,22 @@ fases 10 y 11.
 
 ### Fase 9 — Apariencia y pulido visual
 
+- Onboarding de dos páginas.
+- Widget rectangular `3 × 1` con estados de reposo y grabación.
+- Cabecera, tarjetas, estado vacío, entrada manual y voz.
 - Paletas predefinidas.
 - Persistencia con DataStore.
-- Mejora de la interfaz y revisión del diseño de los iconos.
+- Identidad e iconos de Nolvida.
+
+Estado: completada y auditada. La subfase 9.10 corrigió los cuatro hallazgos
+medios de 9.9 y la segunda auditoría terminó sin hallazgos altos o medios. La
+matriz manual de apariencia y accesibilidad se realizará en las fases 10 y 11.
 
 ### Fase 10 — Calidad
 
 - Pruebas.
 - Prueba específica de concurrencia entre completar o restaurar y reconciliar.
-- Matriz manual pendiente de las fases 6, 7 y 8 en API 31 y API 36.
+- Matriz manual pendiente de las fases 6 a 9 en API 31 y API 36.
 - Accesibilidad.
 - Estados vacíos y errores.
 - Rendimiento.
@@ -464,6 +471,78 @@ dependencias y que una notificación ya publicada pueda conservar su acción en
 el idioma anterior si Android cambia de idioma en ese momento. No justifican
 añadir complejidad al MVP. La matriz manual se aplaza a las fases 10 y 11.
 
+La fase 9 está dividida en bloques pequeños y cuenta con referencias visuales
+definitivas. La preparación 9.0 consolidó los ocho bocetos actuales, el
+onboarding, el símbolo vectorial monocromo y la ilustración sin texto. Los
+bocetos anteriores están archivados en `diseño/diseñoAntiguo/` y no deben
+usarse para implementar. `localizacion/TRADUCCIONES_FASE_9.csv` inventaría los
+textos nuevos o modificados antes de cargarlos en Android.
+
+La subfase 9.1 establece `Nolvida` como nombre visible, fija el tema claro
+lavanda sin colores dinámicos e incorpora el símbolo monocromo tintable y la
+ilustración del onboarding dentro de `android/app`. Un único `AppPreferences`
+con DataStore guarda `onboarding_completed`; `MainActivity` decide entre el
+onboarding de dos páginas y `HomeRoute` sin Navigation Compose. El alias privado
+del widget conserva prioridad incluso al recrearse la actividad, y el
+onboarding no solicita permisos.
+
+La auditoría de 9.1 terminó sin hallazgos altos o medios. Se validaron la lectura
+segura de DataStore, el scroll con texto grande y el contraste de las superficies
+visibles. Material 3 conserva su combinación accesible predeterminada para
+errores, mientras `NolvidaRecording` queda reservado para el estado de
+grabación. Compilación, ensamblado, tests y lint terminaron correctamente; las
+observaciones bajas de terminología, launcher sin fijado de widgets y cobertura
+específica se revisarán durante la fase de calidad.
+
+La subfase 9.2 sustituye el acceso `1 × 1` por un widget fijo `3 × 1` construido
+con un único `RemoteViews`. Sus contenedores de reposo y grabación alternan
+visibilidad; toda la superficie inicia la captura o envía la cancelación
+explícita al servicio. `VoiceCaptureService` activa el estado después de iniciar
+foreground, lo mantiene durante el guardado y lo limpia mediante su salida
+idempotente. El flujo directo, el alias privado, los `PendingIntent` inmutables
+y el reconocimiento exclusivamente local permanecen intactos.
+
+La auditoría de 9.2 detectó inicialmente falta de espacio en `2 × 1` y contraste
+insuficiente en `Grabando…`. Se corrigieron adoptando `3 × 1` y separando un rojo
+de texto accesible del rojo aprobado para el control y la onda. No quedan
+hallazgos altos o medios. El posible estado visual obsoleto tras una finalización
+abrupta del proceso, dos actualizaciones redundantes en rutas de error y la
+ausencia de tests específicos del widget quedan como observaciones bajas para
+9.9 y la fase 10.
+
+Las subfases 9.3 a 9.8 aplican la estructura y cabecera definitivas de Home,
+tarjetas y estado vacío, entrada manual, barra de voz, selector de seis paletas
+persistido con DataStore e identidad de Nolvida en iconos y superficies del
+sistema. Los flujos de texto, voz, completar, deshacer, notificaciones y widget
+se conservan.
+
+La auditoría 9.9 verificó seguridad, arquitectura, recursos, localización,
+accesibilidad y código obsoleto. No encontró permisos de red, telemetría,
+secretos, logs sensibles ni hallazgos altos. Detectó inicialmente cuatro
+hallazgos medios: contraste insuficiente en varias paletas, insets ausentes en
+onboarding, desbordamiento del estado vacío y revisión de voz sin protección
+frente al teclado.
+
+La subfase 9.10 corrigió los cuatro. Los componentes usan roles semánticos de
+color y un test unitario valida las seis paletas; el onboarding aplica
+`safeDrawingPadding`; el estado vacío está centrado dentro de una lista
+desplazable; y Home comparte un único `imePadding`, con scroll acotado en la
+revisión de voz. `MainActivity` consume los insets entregados por `Scaffold`
+antes de delegar a Home. La segunda auditoría terminó con cero hallazgos altos
+o medios.
+
+El resultado automático final es: 15 tests unitarios sin fallos, 29 tests
+instrumentados compilados, compilación Kotlin y ensamblado debug correctos, y
+lint con 0 errores y 19 advertencias ya conocidas. Las 11 advertencias de
+versiones no autorizan actualizar dependencias; los 6 colores de plantilla y
+los 2 launchers raster antiguos se trasladan como limpieza a fase 10. Las
+pruebas físicas de insets, teclado, texto grande, TalkBack y seis paletas siguen
+en la matriz manual de fases 10 y 11.
+
+Los maestros permanecen en `diseño/` y no forman parte del paquete. Los
+materiales de la ficha de Google Play se preparan y suben por separado en fase
+11.
+
 Archivos principales del bloque actual:
 
 ```text
@@ -479,6 +558,12 @@ android/app/src/main/java/com/mvppostit/pensieve/data/repository/
 android/app/src/main/java/com/mvppostit/pensieve/reminders/ReminderManager.kt
 android/app/src/main/java/com/mvppostit/pensieve/notifications/
 android/app/src/main/java/com/mvppostit/pensieve/recovery/
+android/app/src/main/java/com/mvppostit/pensieve/data/preferences/AppPreferences.kt
+android/app/src/main/java/com/mvppostit/pensieve/ui/onboarding/
+android/app/src/main/res/drawable/ic_nolvida.xml
+android/app/src/main/res/layout/widget_voice_capture.xml
+android/app/src/main/res/xml/voice_capture_widget_info.xml
+android/app/src/main/res/drawable-nodpi/illustration_onboarding.png
 android/app/src/main/res/values/strings.xml
 android/app/src/main/res/values-es/strings.xml
 android/app/src/main/res/values-de/strings.xml
@@ -486,12 +571,12 @@ android/app/src/main/res/values-fr/strings.xml
 android/app/src/main/res/values-it/strings.xml
 android/app/src/main/res/values-pt-rPT/strings.xml
 localizacion/TRADUCCIONES_FASE_8.csv
+localizacion/TRADUCCIONES_FASE_9.csv
 ```
 
-El siguiente bloque previsto es la fase 9, apariencia y pulido visual:
-paletas predefinidas, persistencia local mediante DataStore, mejora de la
-interfaz y revisión del diseño de los iconos. Debe diseñarse antes de modificar
-recursos o código.
+El siguiente bloque previsto es la fase 10: calidad, pruebas de concurrencia,
+matrices manuales aplazadas, accesibilidad, rendimiento y limpieza baja
+documentada. No ampliar el producto durante ese trabajo.
 
 ## Referencias de diseño
 
@@ -503,13 +588,19 @@ diseño/
 
 Archivos conocidos:
 
-- `MVP_POSTIT_flujo_tecnico.png`
-- `PantallaApp.png`
-- `bocetografico.png`
-- `coloresBoceto.png`
-- `diseñoNotificacion.png`
-- `flujodevoz.png`
-- `paletaDeColores.png`
-- `pantallaApp1.1.png`
+- `onboarding.png`
+- `01_selector_paletas.png`
+- `02_estado_vacio.png`
+- `03_entrada_manual.png`
+- `04_flujo_voz.png`
+- `05_snackbar_completado.png`
+- `06_animacion_salida_tarjeta.png`
+- `07_notificacion_nativa.png`
+- `08_widget_reposo_grabando.png`
+- `logo_nolvida.svg`
+- `logo_nolvida_monocromo.svg`
+- `ilustracion_onboarding.png`
 
-Usarlas como guía visual. No editarlas ni eliminarlas.
+Usarlas como guía visual. No editarlas ni eliminarlas. Los archivos situados en
+`diseño/diseñoAntiguo/` son históricos y no forman parte de la dirección visual
+aprobada.

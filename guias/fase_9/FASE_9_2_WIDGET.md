@@ -1,8 +1,10 @@
 # Fase 9.2 — Widget rectangular
 
+Estado: **completada y auditada**. No quedan hallazgos altos o medios.
+
 ## Objetivo
 
-Transformar el widget `1 × 1` en un control `2 × 1` que comunique claramente si
+Transformar el widget `1 × 1` en un control `3 × 1` que comunique claramente si
 está en reposo o grabando.
 
 ## Inspeccionar
@@ -15,6 +17,7 @@ android/app/src/main/res/xml/voice_capture_widget_info.xml
 android/app/src/main/res/drawable/
 android/app/src/main/res/values*/strings.xml
 localizacion/TRADUCCIONES_FASE_9.csv
+diseño/08_widget_reposo_grabando.png
 ```
 
 ## Estados visuales
@@ -40,8 +43,8 @@ La descripción accesible debe comunicar `Grabando. Toca para detener`.
 
 1. Usar un único layout `RemoteViews` con dos contenedores y alternar
    `VISIBLE/GONE`.
-2. Cambiar metadatos a `targetCellWidth="2"` y `targetCellHeight="1"`, tamaño
-   mínimo aproximado `110dp × 48dp`, sin redimensionado.
+2. Cambiar metadatos a `targetCellWidth="3"` y `targetCellHeight="1"`, tamaño
+   mínimo aproximado `180dp × 48dp`, sin redimensionado.
 3. Añadir `previewLayout` con el estado de reposo si no introduce otro layout.
 4. Mantener en memoria de proceso solo el estado efímero de la sesión. El
    servicio lo activa tras iniciar foreground y lo limpia en la salida

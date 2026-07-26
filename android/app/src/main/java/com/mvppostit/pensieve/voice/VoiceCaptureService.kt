@@ -107,6 +107,9 @@ class VoiceCaptureService : Service() {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
             )
             foregroundStarted = true
+            // El widget cambia después de que Android haya hecho visible el
+            // foreground service, evitando mostrar "Grabando" demasiado pronto.
+            VoiceCaptureWidgetProvider.setRecordingState(applicationContext, true)
         } catch (_: SecurityException) {
             // Una intención antigua puede llegar después de que Android haya
             // revocado un permiso. Fallamos sin dejar el servicio activo.
@@ -277,6 +280,10 @@ class VoiceCaptureService : Service() {
     private fun finishCapture(cancelSaveJob: Boolean = true) {
         if (cleanupStarted) return
         cleanupStarted = true
+
+        // La salida es idempotente: tanto cancelar como guardar o destruir el
+        // servicio devuelven todas las instancias del widget al estado de reposo.
+        VoiceCaptureWidgetProvider.setRecordingState(applicationContext, false)
 
         stopListeningResources()
 

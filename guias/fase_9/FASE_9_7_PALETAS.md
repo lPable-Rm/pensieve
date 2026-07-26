@@ -15,6 +15,7 @@ android/app/src/main/java/com/mvppostit/pensieve/ui/home/components/NolvidaHeade
 android/app/src/main/java/com/mvppostit/pensieve/widget/VoiceCaptureWidgetProvider.kt
 android/app/src/main/res/values*/strings.xml
 localizacion/TRADUCCIONES_FASE_9.csv
+diseño/01_selector_paletas.png
 ```
 
 ## Crear

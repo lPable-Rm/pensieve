@@ -61,6 +61,7 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     widgetVoiceRequestToken: Int = 0,
     onWidgetVoiceRequestConsumed: (Int) -> Unit = {},
+    onAppearanceClick: () -> Unit = {},
 ) {
     val viewModel: HomeViewModel = viewModel(
         factory = remember(reminderManager) { HomeViewModelFactory(reminderManager) },
@@ -342,6 +343,7 @@ fun HomeRoute(
         onCancelVoiceInput = ::cancelVoiceInput,
         onRetryVoiceInput = ::retryVoiceInput,
         onOpenMicrophoneSettings = ::openApplicationSettings,
+        onAppearanceClick = onAppearanceClick,
     )
 }
 

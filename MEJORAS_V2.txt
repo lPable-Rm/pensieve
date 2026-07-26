@@ -1,8 +1,8 @@
-PENSIEVE — POSIBLES MEJORAS PARA LA VERSIÓN 2.0
+NOLVIDA — POSIBLES MEJORAS PARA LA VERSIÓN 2.0
 
 Este archivo recoge ideas surgidas durante el desarrollo que quedan fuera del MVP.
 Añadir una idea aquí no implica que esté aprobada ni planificada: habrá que valorar
-su utilidad, complejidad, privacidad y coherencia con la filosofía de Pensieve
+su utilidad, complejidad, privacidad y coherencia con la filosofía de Nolvida
 antes de implementarla.
 
 ## Recordatorios periódicos opcionales
@@ -20,7 +20,7 @@ de alarmas en segundo plano de Android.
 
 Valorar un modo opcional en el que una notificación de recordatorio no pueda
 eliminarse al deslizarla. Solo desaparecería al pulsar Hecho desde la propia
-notificación o al completar la nota dentro de Pensieve.
+notificación o al completar la nota dentro de Nolvida.
 
 Posible implementación: usar `setOngoing(true)` al construir la notificación.
 
@@ -30,3 +30,40 @@ un recordatorio pendiente por accidente.
 Pendiente de decidir: si este comportamiento resulta demasiado invasivo, cómo
 presentarlo como una opción sencilla y cómo conviviría con la reconciliación de
 notificaciones descartadas prevista para el MVP.
+
+## Acción secundaria para abrir Nolvida desde el widget
+
+Mantener un toque sobre la superficie principal del widget como acceso inmediato
+a la grabación y reservar el logo situado a la derecha para abrir Nolvida.
+
+No utilizar un doble toque: los widgets clásicos no ofrecen esta interacción de
+forma nativa y simularla obligaría a retrasar la grabación mientras se espera una
+segunda pulsación.
+
+Posible implementación: colocar el logo dentro de una zona táctil independiente
+de al menos 48 dp con su propio `PendingIntent` explícito e inmutable hacia
+`MainActivity` y la descripción accesible `Abrir Nolvida`. Durante la grabación,
+la superficie principal debe conservar la acción de detener.
+
+Motivo: permite entrar voluntariamente en la aplicación sin añadir controles
+visuales nuevos ni perjudicar la captura de voz con un solo toque.
+
+Pendiente de decidir: si la acción se mantiene visible mientras se graba, cómo
+evitar pulsaciones accidentales y si aporta suficiente utilidad frente a abrir
+Nolvida desde su icono normal.
+
+## Widget principal 4 × 1 y posible redimensionamiento
+
+Valorar que el widget use `4 × 1` como tamaño principal en lugar de `3 × 1`.
+Este formato ofrece más espacio para el micrófono, el texto y el estado de
+grabación, y puede ocupar todo el ancho en launchers con una cuadrícula de
+cuatro columnas.
+
+Motivo: facilita la lectura, permite que la onda de grabación respire y acerca
+el widget al formato familiar de una barra de búsqueda sin cambiar su flujo de
+un solo toque.
+
+Como mejora posterior, estudiar si merece la pena permitir que el usuario lo
+reduzca a `3 × 1` o use una variante `2 × 2`. Cada tamaño adicional deberá tener
+un diseño adaptado y probarse en distintos launchers; no se añadirán variantes
+que solo aumenten la complejidad sin mejorar el uso.
