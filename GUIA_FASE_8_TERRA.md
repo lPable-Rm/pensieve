@@ -1,6 +1,7 @@
 # Fase 8 — Índice de implementación con ChatGPT 5.6 Terra
 
-Estado: **diseñada y pendiente de implementación**.
+Estado: **completada y auditada**. La matriz manual queda aplazada a las fases
+10 y 11 por decisión de producto.
 
 ## Objetivo
 
@@ -15,11 +16,6 @@ Idiomas aprobados:
 - francés;
 - italiano;
 - portugués de Portugal.
-
-Este alcance amplía únicamente la mención provisional a español e inglés de
-`AGENTS.md` y `CONTEXTO_MANANA.txt`. El CSV y esta guía recogen la decisión de
-producto más reciente; ambos documentos generales se consolidarán al cerrar
-la auditoría de la fase.
 
 La localización debe cubrir la interfaz, los mensajes de error, las
 notificaciones, el widget y la captura por voz. No se añadirá un selector de
@@ -101,7 +97,7 @@ completo de `values/strings.xml`.
 - Sin modificar `diseño/`, gestionar el emulador, hacer commit o push.
 - Los comentarios del código pueden permanecer en español: no son texto de
   producto y no deben convertirse en recursos.
-- `AGENTS.md` y `CONTEXTO_MANANA.txt` se actualizarán al cerrar la auditoría.
+- `AGENTS.md` y `CONTEXTO_MANANA.txt` reflejan el cierre auditado.
 
 ## Comprobaciones comunes
 
@@ -144,3 +140,22 @@ siguiente.
 - <https://developer.android.com/guide/topics/resources/providing-resources>
 - <https://developer.android.com/guide/topics/resources/app-languages>
 - <https://developer.android.com/reference/android/speech/RecognizerIntent>
+
+## Cierre
+
+- Los seis idiomas coinciden con el CSV y usan recursos nativos de Android.
+- Las cuatro advertencias `MissingQuantity` se corrigieron con `many` en
+  español, francés, italiano y portugués.
+- Tests locales: 9 tests y 0 fallos.
+- Compilación y ensamblado correctos.
+- Lint: 0 errores y 17 advertencias anteriores, ninguna propia de fase 8.
+- No se añadieron dependencias, `localeConfig`, selector o almacenamiento de
+  idioma.
+
+Por decisión de producto, no se limita `resourceConfigurations` ni se añade
+lógica para volver a publicar recordatorios ya visibles al cambiar el idioma
+del sistema. Son observaciones sin impacto relevante en el flujo normal y no
+justifican complejidad adicional en el MVP.
+
+La matriz manual de idiomas, fallback, API 31, API 36 y dispositivo físico se
+realizará en las fases 10 y 11.

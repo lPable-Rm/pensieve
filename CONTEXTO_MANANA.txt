@@ -1,6 +1,6 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 23 de julio de 2026
+Fecha: 25 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
@@ -17,6 +17,10 @@ Estado del proyecto
 - Fase 7 (recuperación) está terminada y auditada sin hallazgos altos o medios.
   Tests locales, compilación, ensamblado y lint son correctos. La matriz manual
   se realizará junto con la del widget en las fases 10 y 11.
+- Fase 8 (idiomas) está terminada y auditada. Los seis idiomas, el fallback
+  inglés, los recursos plurales y la integración con interfaz, voz,
+  notificaciones y widget están validados estática y automáticamente. La
+  matriz manual se realizará en las fases 10 y 11.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
@@ -132,13 +136,33 @@ Qué incluye la Fase 7
   reconciliación y completar o restaurar, para proteger el Mutex frente a
   regresiones futuras.
 
-Siguiente objetivo de implementación: Fase 8 — Idiomas
-- Localización inicial en español e inglés.
-- Selección automática según el idioma configurado en Android.
-- Sin selector interno ni persistencia propia del idioma.
-- Coherencia en interfaz, reconocimiento de voz, notificaciones y widget.
-- Diseñar la fase antes de modificar recursos o código.
+Qué incluye la Fase 8
+- Inglés completo en values/strings.xml como idioma predeterminado y fallback.
+- Recursos localizados en español, alemán, francés, italiano y portugués de
+  Portugal mediante los directorios nativos de Android.
+- Los 37 recursos `string` y el plural de tiempo de grabación coinciden con el
+  CSV de `localizacion/`. Español, francés, italiano y portugués incluyen la
+  cantidad `many` requerida por las reglas de Android.
+- `app_name` permanece como Pensieve, está marcado como no traducible y no se
+  duplica en los archivos localizados.
+- Compose, notificaciones, canales, servicio de voz, Manifest y widget
+  resuelven sus textos desde recursos.
+- `OnDeviceVoiceRecognizer` conserva `Locale.getDefault().toLanguageTag()` para
+  seguir el idioma general de Android sin reconocimiento online.
+- No existe selector interno, `localeConfig`, persistencia propia del idioma,
+  dependencia nueva ni permiso INTERNET.
+- testDebugUnitTest terminó con 9 tests y 0 fallos. compileDebugKotlin,
+  assembleDebug y lintDebug terminaron correctamente.
+- Lint presenta 0 errores y 17 advertencias anteriores de versiones, SDK y
+  colores sin utilizar; no quedan advertencias nuevas de fase 8.
+- Se aceptan como observaciones no bloqueantes los recursos regionales
+  aportados por las dependencias y que las notificaciones ya publicadas puedan
+  conservar el idioma anterior después de un cambio de idioma del sistema.
+  No justifican añadir complejidad al MVP.
+- La matriz manual de los seis idiomas y del fallback inglés se aplaza por
+  decisión de producto a las fases 10 y 11.
 
-Después corresponderá la fase 9 — Apariencia y pulido visual
+Siguiente objetivo de implementación: Fase 9 — Apariencia y pulido visual
 - Paletas predefinidas y persistencia local mediante DataStore.
 - Mejora de la interfaz y revisión del diseño de los iconos.
+- Diseñar la fase antes de modificar recursos o código.

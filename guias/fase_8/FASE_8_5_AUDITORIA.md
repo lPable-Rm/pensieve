@@ -1,5 +1,7 @@
 # Fase 8.5 — Auditoría final
 
+Estado: **superada**. La matriz manual queda aplazada a las fases 10 y 11.
+
 ## Objetivo
 
 Auditar la fase completa sin modificar código. Los hallazgos se documentarán
@@ -47,12 +49,16 @@ Para cada idioma compatible:
 - revisar el nombre y la descripción del widget;
 - confirmar que el reconocimiento solicita el idioma general de Android.
 
-Usar también un idioma no compatible para comprobar el fallback inglés. Las
-pruebas amplias en API 31, API 36 y dispositivo físico pueden aplazarse a las
-fases 10 y 11 si el propietario lo aprueba expresamente.
+Usar también un idioma no compatible para comprobar el fallback inglés. Por
+decisión del propietario, esta matriz y las pruebas amplias en API 31, API 36
+y dispositivo físico se aplazan a las fases 10 y 11.
 
 ## Cierre
 
-La fase puede cerrarse cuando no queden hallazgos altos o medios y las pruebas
-manuales se completen o se aplacen expresamente. Después se actualizarán
-`AGENTS.md`, `CONTEXTO_MANANA.txt` y el estado de esta guía.
+La fase queda cerrada con 9 tests correctos, compilación y ensamblado correctos
+y lint con 0 errores. Las cuatro advertencias nuevas de plurales se corrigieron
+y solo permanecen 17 advertencias anteriores de versiones, SDK y colores.
+
+Se aceptan como no bloqueantes los recursos regionales de dependencias y que
+una notificación ya publicada pueda conservar el idioma anterior después de
+un cambio de idioma del sistema. No justifican añadir complejidad al MVP.

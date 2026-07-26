@@ -2,10 +2,11 @@
 
 ## Proyecto
 
-Este repositorio contiene **Pensieve**, una aplicación Android nativa para capturar pensamientos o recordatorios con la mínima fricción y mantenerlos visibles mediante notificaciones persistentes hasta que el usuario los complete.
+Este repositorio contiene **Nolvida**, una aplicación Android nativa para capturar pensamientos o recordatorios con la mínima fricción y mantenerlos visibles mediante notificaciones persistentes hasta que el usuario los complete.
 
-Nombre provisional del producto: **Pensieve**.  
-Paquete Android: `com.mvppostit.pensieve`.
+Nombre comercial definitivo del producto: **Nolvida**.
+Paquete Android actual: `com.mvppostit.pensieve` (identificador técnico; no
+determina el nombre comercial).
 
 La aplicación se publicará inicialmente en Google Play como una app de pago único, sin publicidad ni suscripciones.
 
@@ -96,7 +97,7 @@ Esta estructura es una guía. No crear archivos vacíos ni capas innecesarias po
 
 - Una única pantalla.
 - Fondo claro y limpio.
-- Cabecera con identidad de Pensieve.
+- Cabecera con identidad de Nolvida.
 - Notas ordenadas de la más reciente a la más antigua.
 - Cada nota aparece en una tarjeta sencilla.
 - Cada tarjeta tiene una única acción circular para marcarla como completada.
@@ -188,8 +189,9 @@ No añadir un selector libre de colores en el MVP.
 
 ### Idiomas
 
-- Pensieve seguirá automáticamente el idioma configurado en Android.
-- La primera localización incluirá español e inglés.
+- Nolvida seguirá automáticamente el idioma configurado en Android.
+- La primera localización incluye inglés como fallback, español, alemán,
+  francés, italiano y portugués de Portugal.
 - No añadir un selector de idioma dentro de la aplicación.
 - La interfaz, la voz, las notificaciones y el widget deben usar el mismo
   idioma del sistema.
@@ -374,10 +376,15 @@ realizarán en las fases 10 y 11.
 
 ### Fase 8 — Idiomas
 
-- Recursos localizados en español e inglés.
+- Inglés completo como fallback.
+- Recursos localizados en español, alemán, francés, italiano y portugués de
+  Portugal.
 - Selección automática según el idioma del sistema Android.
 - Coherencia de idioma en interfaz, voz, notificaciones y widget.
 - Base preparada para añadir más traducciones.
+
+Estado: completada y auditada. La matriz manual de idiomas se realizará en las
+fases 10 y 11.
 
 ### Fase 9 — Apariencia y pulido visual
 
@@ -389,7 +396,7 @@ realizarán en las fases 10 y 11.
 
 - Pruebas.
 - Prueba específica de concurrencia entre completar o restaurar y reconciliar.
-- Matriz manual pendiente de las fases 6 y 7 en API 31 y API 36.
+- Matriz manual pendiente de las fases 6, 7 y 8 en API 31 y API 36.
 - Accesibilidad.
 - Estados vacíos y errores.
 - Rendimiento.
@@ -409,7 +416,7 @@ realizarán en las fases 10 y 11.
 ## Estado actual relevante
 
 La aplicación compila y se ha ejecutado en un emulador Android API 36.1.
-Las fases 1 a 7 están completadas y auditadas. La pantalla, la captura manual,
+Las fases 1 a 8 están completadas y auditadas. La pantalla, la captura manual,
 la captura local por voz y la acción nativa `Hecho` coordinan Room con una
 notificación por nota mediante `ReminderManager` y el contenedor de
 dependencias manual.
@@ -443,6 +450,20 @@ terminó sin hallazgos altos o medios. La prueba específica de concurrencia y l
 matriz manual de recuperación se aplazan por decisión de producto a las fases
 10 y 11.
 
+La fase 8 usa los recursos nativos de Android con inglés completo en
+`values/strings.xml` y traducciones en español, alemán, francés, italiano y
+portugués de Portugal. La interfaz, las notificaciones, el widget y los
+mensajes de voz resuelven `R.string`; el reconocedor conserva
+`Locale.getDefault().toLanguageTag()`. No existe selector, `localeConfig`,
+almacenamiento propio del idioma ni permiso `INTERNET`.
+
+La auditoría de fase 8 terminó sin errores y las cuatro advertencias nuevas de
+plurales se corrigieron con `many` en los idiomas que lo requieren. Se aceptan
+como observaciones no bloqueantes los recursos regionales aportados por las
+dependencias y que una notificación ya publicada pueda conservar su acción en
+el idioma anterior si Android cambia de idioma en ese momento. No justifican
+añadir complejidad al MVP. La matriz manual se aplaza a las fases 10 y 11.
+
 Archivos principales del bloque actual:
 
 ```text
@@ -458,11 +479,19 @@ android/app/src/main/java/com/mvppostit/pensieve/data/repository/
 android/app/src/main/java/com/mvppostit/pensieve/reminders/ReminderManager.kt
 android/app/src/main/java/com/mvppostit/pensieve/notifications/
 android/app/src/main/java/com/mvppostit/pensieve/recovery/
+android/app/src/main/res/values/strings.xml
+android/app/src/main/res/values-es/strings.xml
+android/app/src/main/res/values-de/strings.xml
+android/app/src/main/res/values-fr/strings.xml
+android/app/src/main/res/values-it/strings.xml
+android/app/src/main/res/values-pt-rPT/strings.xml
+localizacion/TRADUCCIONES_FASE_8.csv
 ```
 
-El siguiente bloque previsto es la fase 8, idiomas: localización inicial en
-español e inglés y selección automática según el idioma configurado en Android.
-Debe diseñarse antes de modificar recursos o código.
+El siguiente bloque previsto es la fase 9, apariencia y pulido visual:
+paletas predefinidas, persistencia local mediante DataStore, mejora de la
+interfaz y revisión del diseño de los iconos. Debe diseñarse antes de modificar
+recursos o código.
 
 ## Referencias de diseño
 
