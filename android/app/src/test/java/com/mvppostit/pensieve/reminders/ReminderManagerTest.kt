@@ -4,10 +4,15 @@ import com.mvppostit.pensieve.data.local.ReminderDao
 import com.mvppostit.pensieve.data.local.ReminderEntity
 import com.mvppostit.pensieve.data.repository.ReminderRepository
 import com.mvppostit.pensieve.notifications.ReminderNotifier
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -158,6 +163,92 @@ class ReminderManagerTest {
         assertEquals(listOf(orphanReminderId), fixture.notifier.cancelledReminderIds)
     }
 
+    @Test
+    fun completeAndReconcile_doNotEnterTheFakesSimultaneously() = runBlocking {
+        val fixture = createFixture()
+        val reminder = fixture.manager.createReminder("Complete with reconciliation")
+        fixture.events.clear()
+
+        val deleteStarted = CompletableDeferred<Unit>()
+        val releaseDelete = CompletableDeferred<Unit>()
+        val reconcileStarted = CompletableDeferred<Unit>()
+        fixture.dao.deleteStarted = deleteStarted
+        fixture.dao.releaseDelete = releaseDelete
+        fixture.notifier.activeIdsRequested = reconcileStarted
+
+        val completeJob = async(start = CoroutineStart.UNDISPATCHED) {
+            fixture.manager.completeReminder(reminder.id)
+        }
+        deleteStarted.await()
+
+        val reconcileJob = launch(start = CoroutineStart.UNDISPATCHED) {
+            fixture.manager.reconcileNotifications()
+        }
+
+        try {
+            assertFalse(reconcileStarted.isCompleted)
+        } finally {
+            releaseDelete.complete(Unit)
+        }
+
+        assertEquals(reminder, completeJob.await())
+        reconcileJob.join()
+        assertEquals(
+            listOf("room_find", "room_delete", "notification_cancel", "notification_active_ids"),
+            fixture.events,
+        )
+        assertEquals(emptyList<ReminderEntity>(), fixture.dao.currentReminders())
+        assertEquals(listOf(reminder.id), fixture.notifier.cancelledReminderIds)
+    }
+
+    @Test
+    fun restoreAndReconcile_doNotEnterTheFakesSimultaneously() = runBlocking {
+        val fixture = createFixture()
+        val reminder = fixture.manager.createReminder("Restore with reconciliation")
+        val completedReminder = requireNotNull(fixture.manager.completeReminder(reminder.id))
+        fixture.events.clear()
+        fixture.notifier.publishedReminders.clear()
+
+        val restoreStarted = CompletableDeferred<Unit>()
+        val releaseRestore = CompletableDeferred<Unit>()
+        val reconcileStarted = CompletableDeferred<Unit>()
+        fixture.dao.restoreStarted = restoreStarted
+        fixture.dao.releaseRestore = releaseRestore
+        fixture.notifier.activeIdsRequested = reconcileStarted
+
+        val restoreJob = launch(start = CoroutineStart.UNDISPATCHED) {
+            fixture.manager.restoreReminder(completedReminder)
+        }
+        restoreStarted.await()
+
+        val reconcileJob = launch(start = CoroutineStart.UNDISPATCHED) {
+            fixture.manager.reconcileNotifications()
+        }
+
+        try {
+            assertFalse(reconcileStarted.isCompleted)
+        } finally {
+            releaseRestore.complete(Unit)
+        }
+
+        restoreJob.join()
+        reconcileJob.join()
+        assertEquals(
+            listOf(
+                "room_restore",
+                "notification_publish",
+                "notification_active_ids",
+                "notification_publish",
+            ),
+            fixture.events,
+        )
+        assertEquals(listOf(completedReminder), fixture.dao.currentReminders())
+        assertEquals(
+            listOf(completedReminder, completedReminder),
+            fixture.notifier.publishedReminders,
+        )
+    }
+
     private fun createFixture(): Fixture {
         val events = mutableListOf<String>()
         val dao = FakeReminderDao(events)
@@ -181,6 +272,12 @@ class ReminderManagerTest {
     ) : ReminderDao {
         private val reminders = MutableStateFlow<List<ReminderEntity>>(emptyList())
         var failOnDelete = false
+        var deleteStarted: CompletableDeferred<Unit>? = null
+        var releaseDelete: CompletableDeferred<Unit>? = null
+        var restoreStarted: CompletableDeferred<Unit>? = null
+        var releaseRestore: CompletableDeferred<Unit>? = null
+
+        fun currentReminders(): List<ReminderEntity> = reminders.value
 
         override fun observeAll(): Flow<List<ReminderEntity>> = reminders
 
@@ -193,11 +290,15 @@ class ReminderManagerTest {
 
         override suspend fun insertOrReplace(reminder: ReminderEntity) {
             events += "room_restore"
+            restoreStarted?.complete(Unit)
+            releaseRestore?.await()
             reminders.value = reminders.value.filterNot { it.id == reminder.id } + reminder
         }
 
         override suspend fun deleteById(reminderId: Long): Int {
             events += "room_delete"
+            deleteStarted?.complete(Unit)
+            releaseDelete?.await()
             if (failOnDelete) throw IllegalStateException("Fallo de Room simulado")
 
             val previousSize = reminders.value.size
@@ -217,6 +318,7 @@ class ReminderManagerTest {
         val publishedReminders = mutableListOf<ReminderEntity>()
         val activeReminderIds = mutableSetOf<Long>()
         val cancelledReminderIds = mutableListOf<Long>()
+        var activeIdsRequested: CompletableDeferred<Unit>? = null
 
         override fun publish(reminder: ReminderEntity) {
             events += "notification_publish"
@@ -225,6 +327,7 @@ class ReminderManagerTest {
 
         override fun activeReminderIds(): Set<Long> {
             events += "notification_active_ids"
+            activeIdsRequested?.complete(Unit)
             return activeReminderIds.toSet()
         }
 

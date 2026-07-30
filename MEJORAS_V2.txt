@@ -67,3 +67,25 @@ Como mejora posterior, estudiar si merece la pena permitir que el usuario lo
 reduzca a `3 × 1` o use una variante `2 × 2`. Cada tamaño adicional deberá tener
 un diseño adaptado y probarse en distintos launchers; no se añadirán variantes
 que solo aumenten la complejidad sin mejorar el uso.
+
+## Segundo widget con recordatorios activos
+
+Valorar un segundo widget grande y redimensionable, independiente del acceso
+rápido por voz, que muestre los recordatorios activos y permita marcarlos como
+hechos directamente desde la pantalla de inicio.
+
+El diseño debe mantenerse mínimo: cabecera de Nolvida, lista desplazable,
+texto del recordatorio y una única acción `Hecho` por fila. Room seguirá siendo
+la fuente de verdad y completar desde el widget deberá reutilizar exactamente
+el mismo flujo que la aplicación y las notificaciones.
+
+Tamaños iniciales a estudiar: `4 × 3` y `4 × 4`, con adaptación vertical según
+el espacio concedido por el launcher.
+
+Motivo: refuerza la visibilidad persistente y reduce la fricción para consultar
+y completar recordatorios sin abrir Nolvida.
+
+Límites: no mostrar historial, fechas, prioridades, categorías ni controles de
+gestor de tareas. Antes de implementarlo habrá que diseñar la sincronización,
+el estado vacío, la accesibilidad, el texto grande y las pruebas en distintos
+launchers. Esta mejora queda fuera de la fase 10 y se valorará después del MVP.
