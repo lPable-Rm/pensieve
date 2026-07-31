@@ -1,5 +1,7 @@
 # Fase 10.8 — Auditoría y cierre
 
+Estado: **pendiente de auditoría independiente en un chat limpio**.
+
 ## Objetivo
 
 Auditar de forma independiente el MVP estabilizado y congelar la fase 10 antes
@@ -39,4 +41,3 @@ auditoría.
 - Solo advertencias de lint conocidas y justificadas.
 - `AGENTS.md`, `CONTEXTO_MANANA.txt` y la guía principal reflejan el cierre.
 - No se crea todavía un release, AAB firmado ni ficha de Google Play.
-

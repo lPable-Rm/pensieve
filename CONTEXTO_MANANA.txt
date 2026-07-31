@@ -1,6 +1,6 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 26 de julio de 2026
+Fecha: 31 de julio de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
@@ -11,16 +11,19 @@ Estado del proyecto
   mejoras de robustez, accesibilidad y calidad están validadas en el emulador
   Android API 36.1.
 - Fase 6 (widget) está terminada y auditada. Compilación, tests
-  locales, ensamblado y lint son correctos. La matriz manual del widget y la
-  validación en dispositivo físico se realizarán en las fases 10 y 11 y no
-  bloquean el cierre acordado de esta fase.
+  locales, ensamblado y lint son correctos. La matriz manual del widget y su
+  validación en dispositivo físico se completaron en la fase 10.
 - Fase 7 (recuperación) está terminada y auditada sin hallazgos altos o medios.
   Tests locales, compilación, ensamblado y lint son correctos. La matriz manual
-  se realizará junto con la del widget en las fases 10 y 11.
+  se completó en la fase 10.
 - Fase 8 (idiomas) está terminada y auditada. Los seis idiomas, el fallback
   inglés, los recursos plurales y la integración con interfaz, voz,
   notificaciones y widget están validados estática y automáticamente. La
-  matriz manual se realizará en las fases 10 y 11.
+  matriz manual se completó en la fase 10.
+- Fase 9 (apariencia) está terminada y auditada. Su matriz manual se completó
+  en la fase 10.
+- Fase 10 tiene completadas y validadas las subfases 10.0 a 10.7. Solo queda la
+  auditoría independiente 10.8 antes del cierre formal.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
@@ -128,8 +131,8 @@ Qué incluye la Fase 7
 - El Manifest declara RECEIVE_BOOT_COMPLETED, no declara INTERNET y no usa
   LOCKED_BOOT_COMPLETED.
 - testDebugUnitTest, :app:compileDebugKotlin, :app:assembleDebug y lintDebug
-  terminan correctamente. La matriz manual de recuperación se aplaza a las
-  fases 10 y 11 por decisión de producto.
+  terminan correctamente. La matriz manual de recuperación se completó en la
+  fase 10.
 - La auditoría externa terminó sin hallazgos altos o medios y sin regresiones
   en las fases 4, 5 o 6.
 - Queda para la fase 10 una prueba específica que ejecute simultáneamente una
@@ -159,8 +162,8 @@ Qué incluye la Fase 8
   aportados por las dependencias y que las notificaciones ya publicadas puedan
   conservar el idioma anterior después de un cambio de idioma del sistema.
   No justifican añadir complejidad al MVP.
-- La matriz manual de los seis idiomas y del fallback inglés se aplaza por
-  decisión de producto a las fases 10 y 11.
+- La matriz manual de los seis idiomas y del fallback inglés se completó en la
+  fase 10.
 
 Fase 9 — Apariencia y pulido visual
 - La fase está completada y auditada; las subfases 9.0 a 9.10 están
@@ -192,11 +195,28 @@ Fase 9 — Apariencia y pulido visual
 - Los maestros de diseño no se modifican ni forman parte del AAB. Los materiales
   de Google Play se prepararán por separado en fase 11.
 
-Siguiente objetivo de implementación: Fase 10
-- Ejecutar las matrices manuales aplazadas de las fases 6 a 9 en API 31 y 36.
-- Añadir la prueba específica de concurrencia entre completar o restaurar y
-  reconciliar.
-- Revisar TalkBack, teclado real, texto grande, orientación horizontal,
-  rendimiento y estados de error.
-- Resolver o aceptar expresamente la deuda baja documentada, sin ampliar el
-  producto.
+Fase 10 — Calidad
+- 10.0 midió la línea base: 15 tests unitarios y 19 advertencias de lint.
+- 10.1 eliminó seis colores de plantilla y diez launchers WebP duplicados.
+  Lint quedó con 0 errores y 11 advertencias de versiones aceptadas.
+- 10.2 añadió dos tests deterministas de concurrencia para completar o
+  restaurar mientras se reconcilia. El total quedó en 17 tests unitarios.
+- 10.3 y 10.4 validaron 29/29 tests instrumentados y los flujos manuales en
+  Pixel 6 AVD con API 31 y Pixel 8 AVD con API 36.
+- 10.5 validó TalkBack, texto grande, orientación, teclado, los seis idiomas,
+  fallback inglés y las seis paletas.
+- 10.6 validó 29/29 tests instrumentados y los flujos físicos en un Vivo
+  V2130 con Android 14. Detectó cuatro incidencias reproducibles.
+- 10.7 corrigió y validó la notificación silenciosa en el bloqueo, la
+  jerarquía de notificación sin texto duplicado, los iconos visibles del widget
+  y el centrado de la cabecera. El pulido adicional del widget queda como
+  mejora futura no bloqueante.
+- La matriz guias/fase_10/MATRIZ_PRUEBAS_MANUALES.md conserva la evidencia de
+  los tres entornos y las cuatro incidencias cerradas.
+
+Siguiente objetivo: Fase 10.8
+- Realizar en un chat limpio la auditoría independiente descrita en
+  guias/fase_10/FASE_10_8_AUDITORIA_FINAL.md.
+- No modificar archivos durante la auditoría.
+- Si no aparecen hallazgos altos o medios, cerrar formalmente la fase 10 y
+  preparar después la fase 11. No crear todavía release ni AAB.

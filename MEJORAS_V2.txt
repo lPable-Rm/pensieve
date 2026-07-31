@@ -89,3 +89,20 @@ Límites: no mostrar historial, fechas, prioridades, categorías ni controles de
 gestor de tareas. Antes de implementarlo habrá que diseñar la sincronización,
 el estado vacío, la accesibilidad, el texto grande y las pruebas en distintos
 launchers. Esta mejora queda fuera de la fase 10 y se valorará después del MVP.
+
+## Edición de recordatorios activos
+
+Permitir corregir el texto de un recordatorio activo desde su propia tarjeta,
+sin completarlo ni tener que crear otro. Esta mejora resulta especialmente útil
+para corregir errores producidos durante el reconocimiento de voz.
+
+El flujo debe mantenerse sencillo: pulsar una acción de edición, modificar el
+texto en la misma pantalla y guardar o cancelar. Al guardar se conservará el ID
+y la fecha original del recordatorio, se actualizará su contenido en Room y se
+volverá a publicar la notificación correspondiente utilizando el mismo ID.
+
+Límites: no crear una pantalla adicional, historial de cambios, versiones ni
+metadatos nuevos. Antes de implementarlo habrá que decidir cómo integrar la
+acción de editar sin sobrecargar la tarjeta, que actualmente prioriza una única
+acción visible para completar el recordatorio. Esta mejora queda fuera de la
+fase 10 y se valorará después del MVP.

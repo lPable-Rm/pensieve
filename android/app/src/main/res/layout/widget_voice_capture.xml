@@ -25,10 +25,10 @@
 
         <FrameLayout
             android:id="@+id/widget_voice_capture_idle_mic_container"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/widget_voice_mic_background"
-            android:padding="8dp">
+            android:padding="4dp">
 
             <ImageView
                 android:id="@+id/widget_voice_capture_idle_mic_icon"
@@ -67,11 +67,11 @@
 
         <ImageView
             android:id="@+id/widget_voice_capture_idle_logo"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:contentDescription="@null"
             android:importantForAccessibility="no"
-            android:src="@drawable/ic_nolvida" />
+            android:src="@drawable/ic_nolvida_widget" />
     </LinearLayout>
 
     <!-- Estado de escucha: el mismo clic envía ACTION_CANCEL_CAPTURE. -->
@@ -86,10 +86,10 @@
         android:visibility="gone">
 
         <FrameLayout
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/widget_voice_recording_circle"
-            android:padding="9dp">
+            android:padding="4dp">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -133,11 +133,11 @@
 
         <ImageView
             android:id="@+id/widget_voice_capture_recording_logo"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:contentDescription="@null"
             android:importantForAccessibility="no"
-            android:src="@drawable/ic_nolvida" />
+            android:src="@drawable/ic_nolvida_widget" />
     </LinearLayout>
 
 </FrameLayout>

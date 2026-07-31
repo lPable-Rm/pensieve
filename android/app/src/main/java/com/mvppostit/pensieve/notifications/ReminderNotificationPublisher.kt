@@ -41,8 +41,16 @@ class ReminderNotificationPublisher(
         )
             // Android exige un icono pequeño para cada notificación.
             .setSmallIcon(R.drawable.ic_reminder_notification)
-            .setContentTitle(context.getString(R.string.app_name))
+            .setCategory(Notification.CATEGORY_REMINDER)
+            .setVisibility(Notification.VISIBILITY_PRIVATE)
+            // La cabecera del sistema ya muestra Nolvida. El recordatorio se
+            // usa como cuerpo para que no aparezca duplicado al expandirlo.
             .setContentText(reminder.text)
+            .setWhen(reminder.createdAtMillis)
+            .setStyle(
+                Notification.BigTextStyle()
+                    .bigText(reminder.text),
+            )
             // Abrir Pensieve no completa la nota: sigue activa hasta pulsar Hecho.
             .setContentIntent(createOpenAppPendingIntent())
             .setAutoCancel(false)

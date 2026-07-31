@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Android interpreta los iconos pequeños de notificación como una silueta.
-    La versión blanca y sencilla del símbolo identifica a Nolvida sin color.
+    Variante compacta para el espacio reducido del widget. Conserva el mismo
+    símbolo, pero compensa el margen interno del vector original sin cambiar
+    su tamaño en la cabecera y en otras superficies de Nolvida.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
+    android:width="36dp"
+    android:height="36dp"
     android:viewportWidth="1024"
     android:viewportHeight="1024">
 
     <group
         android:pivotX="512"
-        android:pivotY="512"
-        android:scaleX="1.35"
-        android:scaleY="1.35">
+        android:pivotY="480"
+        android:scaleX="1.45"
+        android:scaleY="1.45">
+
         <path
-            android:fillColor="#FFFFFFFF"
+            android:fillColor="@android:color/black"
             android:fillType="evenOdd"
             android:pathData="M 286,329 H 688 V 438 L 744,585 L 671,607 V 723 H 542 V 805 H 286 Z M 542,438 V 502 H 603 V 438 Z" />
 
@@ -24,12 +26,12 @@
             android:pivotY="212.5"
             android:rotation="-23">
             <path
-                android:fillColor="#FFFFFFFF"
+                android:fillColor="@android:color/black"
                 android:pathData="M 357,160 H 403 V 265 H 357 Z" />
         </group>
 
         <path
-            android:fillColor="#FFFFFFFF"
+            android:fillColor="@android:color/black"
             android:pathData="M 473,159 H 520 V 236 H 473 Z" />
 
         <group
@@ -37,7 +39,7 @@
             android:pivotY="212.5"
             android:rotation="23">
             <path
-                android:fillColor="#FFFFFFFF"
+                android:fillColor="@android:color/black"
                 android:pathData="M 594,160 H 640 V 265 H 594 Z" />
         </group>
     </group>

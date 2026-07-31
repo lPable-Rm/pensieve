@@ -1,6 +1,6 @@
 # Fase 10 — Guía de calidad con ChatGPT 5.6 Terra
 
-Estado: **diseñada y pendiente de ejecución**.
+Estado: **subfases 10.0 a 10.7 completadas; auditoría independiente 10.8 pendiente**.
 
 ## Objetivo
 
@@ -48,6 +48,10 @@ Todos los resultados manuales se registran en
 [MATRIZ_PRUEBAS_MANUALES.md](guias/fase_10/MATRIZ_PRUEBAS_MANUALES.md).
 Completar una sola subfase antes de iniciar la siguiente.
 
+Las pruebas automáticas y manuales de 10.0 a 10.7 ya están registradas. El
+único bloque pendiente es 10.8, que debe realizarse en un chat limpio y sin
+modificar archivos durante la auditoría.
+
 ## Entornos y responsabilidades
 
 - El usuario crea, inicia y selecciona los emuladores en Android Studio.
@@ -70,7 +74,7 @@ de micrófono, widget, notificaciones, teclado, TalkBack y apariencia. La fase
 
 ## Política de pruebas
 
-- Añadir primero la prueba de concurrencia pendiente de fase 7.
+- La prueba de concurrencia pendiente de fase 7 se añadió en 10.2.
 - Preferir tests locales deterministas.
 - Usar tests instrumentados solo cuando se necesiten APIs o interfaz Android.
 - No usar esperas temporales para simular concurrencia.

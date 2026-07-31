@@ -18,18 +18,22 @@ object ReminderNotificationChannel {
     /**
      * Crea el canal si todavía no existe.
      *
-     * IMPORTANCE_LOW mantiene los recordatorios visibles sin sonido ni
-     * vibración, evitando que cada nota nueva interrumpa a la persona.
+     * IMPORTANCE_DEFAULT permite que el recordatorio pueda aparecer en la
+     * pantalla de bloqueo. El sonido y la vibración se desactivan de forma
+     * explícita para mantener una notificación silenciosa.
      */
     fun create(context: Context) {
         val channel = NotificationChannel(
             CHANNEL_ID,
             context.getString(R.string.reminder_notification_channel_name),
-            NotificationManager.IMPORTANCE_LOW,
+            NotificationManager.IMPORTANCE_DEFAULT,
         ).apply {
             description = context.getString(
                 R.string.reminder_notification_channel_description,
             )
+            // El canal necesita una importancia visible, pero no debe interrumpir.
+            setSound(null, null)
+            enableVibration(false)
         }
 
         context.getSystemService(NotificationManager::class.java)

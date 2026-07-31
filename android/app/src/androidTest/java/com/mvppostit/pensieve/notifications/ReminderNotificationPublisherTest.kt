@@ -20,6 +20,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -48,8 +49,11 @@ class ReminderNotificationPublisherTest {
             )
         }
 
-        ReminderNotificationChannel.create(context)
         notificationManager = context.getSystemService(NotificationManager::class.java)
+        // Los canales son inmutables después de crearse; se elimina el canal
+        // para que el caso intente partir de la configuración inicial.
+        notificationManager.deleteNotificationChannel(ReminderNotificationChannel.CHANNEL_ID)
+        ReminderNotificationChannel.create(context)
         publisher = ReminderNotificationPublisher(context)
         cancelTestNotifications()
     }
@@ -60,12 +64,17 @@ class ReminderNotificationPublisherTest {
     }
 
     @Test
-    fun createChannel_usesTheStableLowImportanceConfiguration() {
+    fun createChannel_usesTheStableDefaultSilentConfiguration() {
         val channel = requireNotNull(
             notificationManager.getNotificationChannel(ReminderNotificationChannel.CHANNEL_ID),
         )
 
-        assertEquals(NotificationManager.IMPORTANCE_LOW, channel.importance)
+        assertTrue(
+            "El canal debe ser visible y no puede quedarse en IMPORTANCE_LOW",
+            channel.importance >= NotificationManager.IMPORTANCE_DEFAULT,
+        )
+        assertNull(channel.sound)
+        assertFalse(channel.shouldVibrate())
         assertEquals(
             context.getString(R.string.reminder_notification_channel_name),
             channel.name.toString(),
@@ -85,13 +94,20 @@ class ReminderNotificationPublisherTest {
         val postedNotification = awaitPostedNotification(reminder.id)
         val notification = postedNotification.notification
         assertEquals(ReminderNotificationChannel.CHANNEL_ID, notification.channelId)
-        assertEquals(
-            context.getString(R.string.app_name),
-            notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString(),
-        )
+        assertEquals(Notification.CATEGORY_REMINDER, notification.category)
+        assertEquals(Notification.VISIBILITY_PRIVATE, notification.visibility)
+        assertNull(notification.extras.getCharSequence(Notification.EXTRA_TITLE))
         assertEquals(
             reminder.text,
             notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString(),
+        )
+        assertEquals(
+            reminder.createdAtMillis,
+            notification.`when`,
+        )
+        assertEquals(
+            reminder.text,
+            notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString(),
         )
         assertNotNull(notification.contentIntent)
         assertTrue(notification.contentIntent.isActivity)

@@ -361,8 +361,8 @@ Estado: completada y auditada.
 - Guardado automático del resultado final.
 - Fallback visible y privado para preparar permisos.
 
-Estado: completada y auditada. Las pruebas manuales amplias se
-realizarán en las fases 10 y 11.
+Estado: completada y auditada. La matriz manual amplia se completó en la fase
+10; la fase 11 conservará solo la prueba de humo de la versión release.
 
 ### Fase 7 — Recuperación
 
@@ -372,7 +372,7 @@ realizarán en las fases 10 y 11.
 - WorkManager periódico.
 
 Estado: completada y auditada. Las pruebas manuales de recuperación se
-realizarán en las fases 10 y 11.
+completaron en la fase 10.
 
 ### Fase 8 — Idiomas
 
@@ -383,8 +383,8 @@ realizarán en las fases 10 y 11.
 - Coherencia de idioma en interfaz, voz, notificaciones y widget.
 - Base preparada para añadir más traducciones.
 
-Estado: completada y auditada. La matriz manual de idiomas se realizará en las
-fases 10 y 11.
+Estado: completada y auditada. La matriz manual de idiomas se completó en la
+fase 10.
 
 ### Fase 9 — Apariencia y pulido visual
 
@@ -397,17 +397,20 @@ fases 10 y 11.
 
 Estado: completada y auditada. La subfase 9.10 corrigió los cuatro hallazgos
 medios de 9.9 y la segunda auditoría terminó sin hallazgos altos o medios. La
-matriz manual de apariencia y accesibilidad se realizará en las fases 10 y 11.
+matriz manual de apariencia y accesibilidad se completó en la fase 10.
 
 ### Fase 10 — Calidad
 
 - Pruebas.
 - Prueba específica de concurrencia entre completar o restaurar y reconciliar.
-- Matriz manual pendiente de las fases 6 a 9 en API 31 y API 36.
+- Matriz manual de las fases 6 a 9 en API 31, API 36 y dispositivo físico.
 - Accesibilidad.
 - Estados vacíos y errores.
 - Rendimiento.
 - Pulido visual.
+
+Estado: subfases 10.0 a 10.7 completadas y validadas. La subfase 10.8,
+auditoría independiente y cierre formal, permanece pendiente.
 
 ### Fase 11 — Publicación comercial
 
@@ -445,8 +448,8 @@ Room.
 Si falta un permiso, un `PendingIntent` inmutable abre el alias privado
 `WidgetVoiceEntry`, que apunta a la única `MainActivity`. La actividad rechaza
 la misma acción si llega directamente a su componente exportado. La auditoría
-automática de fase 6 finalizó sin errores; la matriz manual se aplaza por
-decisión de producto a las fases 10 y 11.
+automática de fase 6 finalizó sin errores; la matriz manual se completó en la
+fase 10 sobre API 31, API 36 y el Vivo V2130.
 
 La fase 7 reconcilia las notas activas de Room con las notificaciones visibles:
 publica las ausentes, cancela las huérfanas e ignora las coincidencias. Un único
@@ -454,8 +457,7 @@ publica las ausentes, cancela las huérfanas e ignora las coincidencias. Un úni
 ejecuta al entrar en primer plano, cada 15 minutos con WorkManager y después de
 `BOOT_COMPLETED`, usando trabajos únicos con política `KEEP`. La auditoría
 terminó sin hallazgos altos o medios. La prueba específica de concurrencia y la
-matriz manual de recuperación se aplazan por decisión de producto a las fases
-10 y 11.
+matriz manual de recuperación se completaron en la fase 10.
 
 La fase 8 usa los recursos nativos de Android con inglés completo en
 `values/strings.xml` y traducciones en español, alemán, francés, italiano y
@@ -469,7 +471,7 @@ plurales se corrigieron con `many` en los idiomas que lo requieren. Se aceptan
 como observaciones no bloqueantes los recursos regionales aportados por las
 dependencias y que una notificación ya publicada pueda conservar su acción en
 el idioma anterior si Android cambia de idioma en ese momento. No justifican
-añadir complejidad al MVP. La matriz manual se aplaza a las fases 10 y 11.
+añadir complejidad al MVP. La matriz manual se completó en la fase 10.
 
 La fase 9 está dividida en bloques pequeños y cuenta con referencias visuales
 definitivas. La preparación 9.0 consolidó los ocho bocetos actuales, el
@@ -534,10 +536,24 @@ o medios.
 El resultado automático final es: 15 tests unitarios sin fallos, 29 tests
 instrumentados compilados, compilación Kotlin y ensamblado debug correctos, y
 lint con 0 errores y 19 advertencias ya conocidas. Las 11 advertencias de
-versiones no autorizan actualizar dependencias; los 6 colores de plantilla y
-los 2 launchers raster antiguos se trasladan como limpieza a fase 10. Las
-pruebas físicas de insets, teclado, texto grande, TalkBack y seis paletas siguen
-en la matriz manual de fases 10 y 11.
+versiones no autorizan actualizar dependencias. Los 6 colores de plantilla y
+los 2 launchers raster antiguos se eliminaron de forma segura en 10.1. Las
+pruebas físicas de insets, teclado, texto grande, TalkBack y seis paletas se
+completaron en la fase 10.
+
+La fase 10 añadió dos tests deterministas que protegen la exclusión mutua entre
+completar o restaurar y reconciliar. El resultado actual es de 17 tests
+unitarios correctos. Los 29 tests instrumentados terminaron sin fallos ni
+omitidos en Pixel 6 AVD con API 31, Pixel 8 AVD con API 36 y Vivo V2130 con
+Android 14. La matriz manual de flujos, accesibilidad, idiomas, paletas y
+dispositivo físico está completada.
+
+La prueba física detectó cuatro incidencias en 10.6. La subfase 10.7 corrigió
+la visibilidad silenciosa de la notificación en el bloqueo, la jerarquía sin
+texto duplicado, el tamaño visible de los iconos del widget y el centrado de la
+cabecera. El usuario validó las cuatro correcciones; el pulido adicional del
+widget queda como mejora futura no bloqueante. Lint conserva 0 errores y las
+11 advertencias de versiones aceptadas.
 
 Los maestros permanecen en `diseño/` y no forman parte del paquete. Los
 materiales de la ficha de Google Play se preparan y suben por separado en fase
@@ -574,9 +590,9 @@ localizacion/TRADUCCIONES_FASE_8.csv
 localizacion/TRADUCCIONES_FASE_9.csv
 ```
 
-El siguiente bloque previsto es la fase 10: calidad, pruebas de concurrencia,
-matrices manuales aplazadas, accesibilidad, rendimiento y limpieza baja
-documentada. No ampliar el producto durante ese trabajo.
+El siguiente bloque previsto es 10.8: auditoría independiente y cierre formal
+de la fase 10. Debe realizarse en un chat limpio, sin modificar archivos durante
+la auditoría. No iniciar todavía el release ni la ficha de Google Play.
 
 ## Referencias de diseño
 
