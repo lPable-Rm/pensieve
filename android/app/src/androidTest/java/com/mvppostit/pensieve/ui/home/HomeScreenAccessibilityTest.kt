@@ -68,6 +68,21 @@ class HomeScreenAccessibilityTest {
     }
 
     @Test
+    fun newNoteButton_isDisabledWhileManualInputIsVisible() {
+        setHomeContent(
+            state = HomeUiState(isManualInputVisible = true),
+            onVoiceClick = {},
+        )
+
+        composeTestRule
+            .onNodeWithText(stringResource(R.string.new_reminder_placeholder))
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(stringResource(R.string.new_reminder))
+            .assertIsNotEnabled()
+    }
+
+    @Test
     fun emptyState_voiceActionRemainsReachableWithLargeTextAndLittleHeight() {
         var voiceClicks = 0
 

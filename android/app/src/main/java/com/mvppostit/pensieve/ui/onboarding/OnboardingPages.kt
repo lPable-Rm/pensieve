@@ -157,8 +157,8 @@ private fun InformationCard(
 }
 
 /**
- * Dibuja una maqueta estática. No crea un widget real ni guarda el recordatorio
- * de ejemplo; el widget funcional se conectará en las fases correspondientes.
+ * Dibuja una maqueta estática del onboarding. No crea un widget real ni guarda
+ * el recordatorio de ejemplo; el widget funcional ya está implementado.
  */
 @Composable
 private fun WidgetPreview() {

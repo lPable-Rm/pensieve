@@ -58,7 +58,6 @@ fun HomeScreen(
     onOpenMicrophoneSettings: () -> Unit = {},
     onAppearanceClick: () -> Unit = {},
 ) {
-    val justNowLabel = stringResource(R.string.created_just_now)
     val isVoiceInputActive = uiState.voiceInputState !is VoiceInputState.Hidden
     val showEmptyState =
         uiState.reminders.isEmpty() &&
@@ -142,7 +141,6 @@ fun HomeScreen(
                             text = reminder.text,
                             createdAtLabel = formatCreatedAtLabel(
                                 createdAtMillis = reminder.createdAtMillis,
-                                justNowLabel = justNowLabel,
                             ),
                             completeDescription = stringResource(
                                 R.string.complete_reminder,
@@ -179,13 +177,9 @@ fun HomeScreen(
 }
 
 /** Convierte la fecha almacenada en texto de interfaz sin modificar el dato original. */
-private fun formatCreatedAtLabel(createdAtMillis: Long, justNowLabel: String): String {
-    val isLessThanOneMinuteOld = createdAtMillis >= System.currentTimeMillis() - 60_000
-    if (isLessThanOneMinuteOld) return justNowLabel
-
-    return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+private fun formatCreatedAtLabel(createdAtMillis: Long): String =
+    DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
         .format(Date(createdAtMillis))
-}
 
 // Datos exclusivos de los previews: la aplicación real siempre recibe Room.
 private val previewReminders = listOf(

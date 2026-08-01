@@ -44,4 +44,3 @@ Registrar la fecha, rama, versión debug, tests y resumen de lint. Ejecutar:
 git diff --check
 git status --short
 ```
-

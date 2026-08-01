@@ -1,6 +1,6 @@
 # Fase 10 — Matriz de pruebas
 
-Estado: **subfases 10.0 a 10.7 completadas; auditoría independiente 10.8 pendiente**.
+Estado: **completada y auditada; subfases 10.0 a 10.9 cerradas**.
 
 ## Leyenda
 
@@ -99,6 +99,12 @@ producción ni se añadieron dependencias.
 - **10.7:** las cuatro incidencias se corrigieron y el usuario aprobó cada
   repetición. El pulido adicional del widget se conserva como mejora futura y
   no bloquea esta versión.
+- **10.8:** la auditoría integral terminó con 0 hallazgos altos, 0 medios y 7
+  bajos. B-01, B-03, B-06 y B-07 pasan a corrección en 10.9; B-02, B-04 y B-05
+  quedan aceptados como deuda no bloqueante.
+- **10.9:** B-01, B-03, B-06 y B-07 quedaron corregidos y revisados. La suite
+  actual contiene 30 tests instrumentados que compilan; las ejecuciones válidas
+  anteriores de 29/29 en los tres entornos se conservan como evidencia.
 
 ## Entornos
 
@@ -116,6 +122,7 @@ producción ni se añadieron dependencias.
 | Tests instrumentados API 31 | OK | 29 ejecutados; 0 fallos, 0 errores, 0 omitidos | Pixel 6 AVD, Android 12 |
 | Tests instrumentados API 36 | OK | 29 ejecutados; 0 fallos, 0 errores, 0 omitidos | Pixel 8 AVD, Android 16 |
 | Tests instrumentados físicos | OK | 29 ejecutados; 0 fallos, 0 errores, 0 omitidos | Vivo V2130, Android 14 |
+| Suite instrumentada tras 10.9 | OK | 30 métodos compilados; ejecución conectada no repetida | `:app:compileDebugAndroidTestKotlin` |
 | APK debug | OK | Ensamblado correcto | `:app:assembleDebug` |
 | Lint | OK | 0 errores, 11 advertencias | `lintDebug`: 0 plantilla, 0 launcher, 11 versiones, 0 inesperadas |
 

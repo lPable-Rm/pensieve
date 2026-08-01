@@ -1,6 +1,6 @@
 # Fase 10 — Guía de calidad con ChatGPT 5.6 Terra
 
-Estado: **subfases 10.0 a 10.7 completadas; auditoría independiente 10.8 pendiente**.
+Estado: **completada y auditada; subfases 10.0 a 10.9 cerradas**.
 
 ## Objetivo
 
@@ -43,14 +43,16 @@ sin comprobar los informes reales.
 | 10.6 | Dispositivo físico | [FASE_10_6_DISPOSITIVO_FISICO.md](guias/fase_10/FASE_10_6_DISPOSITIVO_FISICO.md) |
 | 10.7 | Correcciones demostradas | [FASE_10_7_CORRECCIONES.md](guias/fase_10/FASE_10_7_CORRECCIONES.md) |
 | 10.8 | Auditoría y cierre | [FASE_10_8_AUDITORIA_FINAL.md](guias/fase_10/FASE_10_8_AUDITORIA_FINAL.md) |
+| 10.9 | Correcciones bajas de auditoría | [FASE_10_9_CORRECCIONES_AUDITORIA.md](guias/fase_10/FASE_10_9_CORRECCIONES_AUDITORIA.md) |
 
 Todos los resultados manuales se registran en
 [MATRIZ_PRUEBAS_MANUALES.md](guias/fase_10/MATRIZ_PRUEBAS_MANUALES.md).
 Completar una sola subfase antes de iniciar la siguiente.
 
-Las pruebas automáticas y manuales de 10.0 a 10.7 ya están registradas. El
-único bloque pendiente es 10.8, que debe realizarse en un chat limpio y sin
-modificar archivos durante la auditoría.
+Las pruebas automáticas y manuales de 10.0 a 10.7 ya están registradas. La
+auditoría integral 10.8 terminó sin hallazgos altos o medios y registró siete
+hallazgos bajos. La subfase 10.9 corrigió cuatro y aceptó expresamente tres
+como deuda no bloqueante. La fase 10 queda cerrada.
 
 ## Entornos y responsabilidades
 

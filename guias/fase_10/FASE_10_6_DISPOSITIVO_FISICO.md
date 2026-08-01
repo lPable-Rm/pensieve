@@ -47,4 +47,3 @@ jank reproducible, medir entonces con las herramientas de Android Studio.
 - Flujos críticos y casos físicos completados.
 - Ningún problema visual se corrige sin una reproducción anotada.
 - Los fallos quedan preparados para 10.7 con pasos y severidad provisional.
-

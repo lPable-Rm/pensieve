@@ -42,4 +42,3 @@ git status --short
 - Desaparecen las ocho advertencias de recursos.
 - Quedan aproximadamente once advertencias de versiones, aceptadas sin
   actualizar herramientas o dependencias.
-

@@ -47,4 +47,3 @@ otra oscura; no cruzar seis idiomas por seis paletas.
 - Todos los casos `A11Y`, `LOC` y `PAL` tienen evidencia.
 - No hay contenido inaccesible, cortado o imposible de pulsar.
 - Cualquier excepción aceptada está documentada y no oculta un fallo.
-

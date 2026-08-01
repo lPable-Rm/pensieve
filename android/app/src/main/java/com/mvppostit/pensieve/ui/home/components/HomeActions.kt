@@ -36,7 +36,8 @@ internal fun HomeActions(
     modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val canCreateManualReminder = !isVoiceInputActive && !isSavingReminder
+    val canCreateManualReminder =
+        !isManualInputVisible && !isVoiceInputActive && !isSavingReminder
     val canCreateVoiceReminder =
         !isManualInputVisible && !isVoiceInputActive && !isSavingReminder
 

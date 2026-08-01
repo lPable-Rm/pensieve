@@ -44,4 +44,3 @@ reproducción. No corregir durante esta subfase.
 - Tests instrumentados API 36 registrados.
 - Toda la columna obligatoria tiene un resultado real.
 - Las diferencias entre API 31 y API 36 están documentadas.
-

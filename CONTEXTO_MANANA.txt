@@ -1,6 +1,6 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 31 de julio de 2026
+Fecha: 1 de agosto de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
@@ -22,8 +22,9 @@ Estado del proyecto
   matriz manual se completó en la fase 10.
 - Fase 9 (apariencia) está terminada y auditada. Su matriz manual se completó
   en la fase 10.
-- Fase 10 tiene completadas y validadas las subfases 10.0 a 10.7. Solo queda la
-  auditoría independiente 10.8 antes del cierre formal.
+- Fase 10 está completada y auditada. Las subfases 10.0 a 10.9 están cerradas;
+  la auditoría integral terminó sin hallazgos altos o medios y 10.9 resolvió
+  los cuatro hallazgos bajos seleccionados.
 
 Qué incluye la Fase 4
 - Permiso POST_NOTIFICATIONS declarado en el Manifest y solicitado al guardar
@@ -213,10 +214,22 @@ Fase 10 — Calidad
   mejora futura no bloqueante.
 - La matriz guias/fase_10/MATRIZ_PRUEBAS_MANUALES.md conserva la evidencia de
   los tres entornos y las cuatro incidencias cerradas.
+- 10.9 corrigió el estado de `Nueva nota`, la fecha estable de las tarjetas,
+  el tono portugués y la documentación. La suite actual contiene 30 tests
+  instrumentados compilados; las ejecuciones anteriores de 29/29 en cada
+  entorno se conservan como evidencia real.
 
-Siguiente objetivo: Fase 10.8
-- Realizar en un chat limpio la auditoría independiente descrita en
-  guias/fase_10/FASE_10_8_AUDITORIA_FINAL.md.
-- No modificar archivos durante la auditoría.
-- Si no aparecen hallazgos altos o medios, cerrar formalmente la fase 10 y
-  preparar después la fase 11. No crear todavía release ni AAB.
+Auditoría integral 10.8
+- Terminó con 0 hallazgos altos, 0 medios y 7 bajos.
+- B-01 detectó que `Nueva nota` sigue habilitado con el editor manual abierto.
+- B-03 detectó que `Ahora` no avanza sin otra recomposición.
+- B-06 detectó una mezcla de tratamiento formal e informal en portugués.
+- B-07 reunió referencias antiguas y limpieza documental.
+- B-02, B-04 y B-05 son deuda baja aceptable: recuperación visual extrema del
+  widget, conversión impracticable de IDs y cobertura directa adicional.
+
+Siguiente objetivo: diseñar la Fase 11
+- La fase 10 está cerrada y no requiere más correcciones.
+- Diseñar antes de implementar el proceso de publicación comercial.
+- Todavía no se ha creado el release firmado, AAB, política de privacidad,
+  declaración Data Safety ni ficha de Google Play.

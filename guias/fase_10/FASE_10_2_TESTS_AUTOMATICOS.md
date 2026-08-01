@@ -40,4 +40,3 @@ permanecen en las subfases manuales. No añadir dependencias.
 - Todos los tests locales terminan sin fallos ni omitidos inesperados.
 - Producción queda intacta o cualquier corrección necesaria se explica y
   audita como un cambio separado.
-

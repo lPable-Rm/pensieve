@@ -147,7 +147,7 @@ No abrir una pantalla adicional solo para confirmar el texto.
 
 Flujo implementado:
 
-1. Pulsar el widget `1 × 1`.
+1. Pulsar el widget `3 × 1`.
 2. Iniciar directamente un foreground service de tipo `microphone`, sin abrir
    `MainActivity` durante el uso normal.
 3. Mostrar inmediatamente la notificación temporal `Escuchando…` con la acción
@@ -356,7 +356,7 @@ Estado: completada y auditada.
 
 ### Fase 6 — Widget
 
-- Widget de acceso rápido `1 × 1`.
+- Widget de acceso rápido `1 × 1` (tamaño histórico, sustituido por `3 × 1` en la fase 9).
 - Captura local directa mediante foreground service de micrófono.
 - Guardado automático del resultado final.
 - Fallback visible y privado para preparar permisos.
@@ -409,8 +409,9 @@ matriz manual de apariencia y accesibilidad se completó en la fase 10.
 - Rendimiento.
 - Pulido visual.
 
-Estado: subfases 10.0 a 10.7 completadas y validadas. La subfase 10.8,
-auditoría independiente y cierre formal, permanece pendiente.
+Estado: completada y auditada. Las subfases 10.0 a 10.9 están cerradas; la
+auditoría integral terminó sin hallazgos altos o medios y 10.9 resolvió los
+cuatro hallazgos bajos seleccionados.
 
 ### Fase 11 — Publicación comercial
 
@@ -543,10 +544,12 @@ completaron en la fase 10.
 
 La fase 10 añadió dos tests deterministas que protegen la exclusión mutua entre
 completar o restaurar y reconciliar. El resultado actual es de 17 tests
-unitarios correctos. Los 29 tests instrumentados terminaron sin fallos ni
+unitarios correctos. Los 29 tests instrumentados disponibles antes de 10.9
+terminaron sin fallos ni
 omitidos en Pixel 6 AVD con API 31, Pixel 8 AVD con API 36 y Vivo V2130 con
 Android 14. La matriz manual de flujos, accesibilidad, idiomas, paletas y
-dispositivo físico está completada.
+dispositivo físico está completada. Tras añadir la comprobación semántica de
+10.9, la suite actual contiene 30 tests instrumentados que compilan.
 
 La prueba física detectó cuatro incidencias en 10.6. La subfase 10.7 corrigió
 la visibilidad silenciosa de la notificación en el bloqueo, la jerarquía sin
@@ -554,6 +557,13 @@ texto duplicado, el tamaño visible de los iconos del widget y el centrado de la
 cabecera. El usuario validó las cuatro correcciones; el pulido adicional del
 widget queda como mejora futura no bloqueante. Lint conserva 0 errores y las
 11 advertencias de versiones aceptadas.
+
+La auditoría integral 10.8 consideró el MVP apto para avanzar: no encontró
+hallazgos altos o medios y registró siete observaciones bajas. La subfase 10.9
+corrigió el estado semántico de `Nueva nota`, la fecha no reactiva de las
+tarjetas, el tono portugués y la documentación obsoleta. El estado visual del
+widget tras muerte abrupta, la conversión extrema de IDs y la cobertura directa
+de voz/widget quedan aceptados como deuda no bloqueante.
 
 Los maestros permanecen en `diseño/` y no forman parte del paquete. Los
 materiales de la ficha de Google Play se preparan y suben por separado en fase
@@ -590,9 +600,9 @@ localizacion/TRADUCCIONES_FASE_8.csv
 localizacion/TRADUCCIONES_FASE_9.csv
 ```
 
-El siguiente bloque previsto es 10.8: auditoría independiente y cierre formal
-de la fase 10. Debe realizarse en un chat limpio, sin modificar archivos durante
-la auditoría. No iniciar todavía el release ni la ficha de Google Play.
+El siguiente bloque previsto es diseñar la fase 11 de publicación comercial. La
+fase 10 está cerrada, pero todavía no se ha creado el release, el AAB ni la ficha
+de Google Play.
 
 ## Referencias de diseño
 

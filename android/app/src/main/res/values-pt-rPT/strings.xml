@@ -4,7 +4,7 @@
     <string name="complete_reminder">Concluir lembrete: %1$s</string>
     <string name="reminder_completed">Lembrete concluído</string>
     <string name="undo">Anular</string>
-    <string name="new_reminder_placeholder">Escreva um lembrete</string>
+    <string name="new_reminder_placeholder">Escreve um lembrete</string>
     <string name="save_reminder">Guardar</string>
     <string name="cancel">Cancelar</string>
     <string name="created_just_now">Agora</string>
@@ -19,7 +19,7 @@
     <string name="widget_voice_capture_name">Nolvida: gravar voz</string>
     <string name="widget_voice_capture_description">Gravar lembrete</string>
     <string name="complete_reminder_action">Concluído</string>
-    <string name="notification_permission_denied">Permita as notificações para manter este lembrete visível mesmo depois de fechar a Nolvida.</string>
+    <string name="notification_permission_denied">Permite as notificações para manter este lembrete visível mesmo depois de fechar a Nolvida.</string>
     <string name="voice_listening">A ouvir…</string>
     <string name="voice_processing">A processar a tua voz…</string>
     <string name="voice_saving">A guardar o teu lembrete…</string>
@@ -30,7 +30,7 @@
     <string name="voice_retry">Tentar novamente</string>
     <string name="voice_close">Fechar</string>
     <string name="voice_open_settings">Abrir Definições</string>
-    <string name="voice_review_placeholder">Reveja o seu lembrete</string>
+    <string name="voice_review_placeholder">Revê o teu lembrete</string>
     <plurals name="voice_elapsed_seconds">
         <item quantity="one">%1$d segundo de gravação</item>
         <item quantity="many">%1$d de segundos de gravação</item>
@@ -39,8 +39,8 @@
     <string name="voice_no_speech">Não foi detetada voz.</string>
     <string name="voice_language_unavailable">O idioma não está disponível para o reconhecimento de voz local.</string>
     <string name="voice_recognizer_unavailable">O reconhecimento de voz local não está disponível neste dispositivo.</string>
-    <string name="voice_permission_denied">Permita o acesso ao microfone para criar uma nota por voz.</string>
-    <string name="voice_temporary_failure">Não foi possível transcrever agora. Tente novamente.</string>
+    <string name="voice_permission_denied">Permite o acesso ao microfone para criar uma nota por voz.</string>
+    <string name="voice_temporary_failure">Não foi possível transcrever agora. Tenta novamente.</string>
     <string name="onboarding_capture_title">Tira-o da cabeça</string>
     <string name="onboarding_capture_body">Escreve ou dita um lembrete. Nolvida mantém-no visível até tocares em Concluído.</string>
     <string name="onboarding_visibility_title">Sempre visível</string>

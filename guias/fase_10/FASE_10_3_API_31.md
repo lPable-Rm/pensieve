@@ -46,4 +46,3 @@ lectura, pero no corregir durante esta subfase.
 - Tests instrumentados API 31 registrados.
 - Toda la columna obligatoria tiene un resultado real.
 - Ningún fallo se convierte en `OK` sin repetir el caso.
-
