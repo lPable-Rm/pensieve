@@ -57,6 +57,7 @@ fun HomeScreen(
     onRetryVoiceInput: () -> Unit = {},
     onOpenMicrophoneSettings: () -> Unit = {},
     onAppearanceClick: () -> Unit = {},
+    onPrivacyPolicyClick: () -> Unit = {},
 ) {
     val isVoiceInputActive = uiState.voiceInputState !is VoiceInputState.Hidden
     val showEmptyState =
@@ -76,7 +77,10 @@ fun HomeScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        NolvidaHeader(onAppearanceClick = onAppearanceClick)
+        NolvidaHeader(
+            onAppearanceClick = onAppearanceClick,
+            onPrivacyPolicyClick = onPrivacyPolicyClick,
+        )
 
         Spacer(modifier = Modifier.height(28.dp))
 

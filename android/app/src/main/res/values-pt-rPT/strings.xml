@@ -58,7 +58,9 @@
     <string name="widget_tap_to_speak">Toca para falar</string>
     <string name="widget_recording">A gravar…</string>
     <string name="widget_recording_description">A gravar. Toca para parar.</string>
-    <string name="appearance_open">Alterar o aspeto</string>
+    <string name="app_options">Mais opções</string>
+    <string name="privacy_policy">Política de privacidade</string>
+    <string name="privacy_policy_open_failed">Não foi possível abrir a política de privacidade.</string>
     <string name="appearance_title">Aspeto</string>
     <string name="appearance_subtitle">Escolhe a tua paleta preferida</string>
     <string name="appearance_applies_immediately">A paleta é aplicada de imediato em toda a aplicação e no widget.</string>

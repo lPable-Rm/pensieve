@@ -2,6 +2,7 @@ package com.mvppostit.pensieve.ui.home
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -81,6 +83,9 @@ fun HomeRoute(
     val restoreFailedMessage = stringResource(R.string.reminder_restore_failed)
     val notificationPermissionDeniedMessage =
         stringResource(R.string.notification_permission_denied)
+    val privacyPolicyUrl = stringResource(R.string.privacy_policy_url)
+    val privacyPolicyOpenFailedMessage =
+        stringResource(R.string.privacy_policy_open_failed)
     // Activity Result puede entregar una respuesta después de recrear la
     // actividad. Conservamos estos dos marcadores pequeños para interpretar
     // correctamente el permiso sin guardar aquí el texto de ningún borrador.
@@ -229,6 +234,23 @@ fun HomeRoute(
         )
     }
 
+    fun openPrivacyPolicy() {
+        val privacyIntent = Intent(
+            Intent.ACTION_VIEW,
+            privacyPolicyUrl.toUri(),
+        ).addCategory(Intent.CATEGORY_BROWSABLE)
+
+        try {
+            context.startActivity(privacyIntent)
+        } catch (_: ActivityNotFoundException) {
+            // Un dispositivo sin navegador no debe cerrar Nolvida: explicamos
+            // el problema en la misma superficie usada por el resto de errores.
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(privacyPolicyOpenFailedMessage)
+            }
+        }
+    }
+
     // La escucha no debe continuar sin una superficie visible. La revisión ya
     // recibida se conserva para que una rotación o ir a segundo plano no borre texto.
     DisposableEffect(lifecycleOwner, voiceRecognizer, viewModel) {
@@ -344,6 +366,7 @@ fun HomeRoute(
         onRetryVoiceInput = ::retryVoiceInput,
         onOpenMicrophoneSettings = ::openApplicationSettings,
         onAppearanceClick = onAppearanceClick,
+        onPrivacyPolicyClick = ::openPrivacyPolicy,
     )
 }
 

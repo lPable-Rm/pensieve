@@ -58,7 +58,9 @@
     <string name="widget_tap_to_speak">Tocca per parlare</string>
     <string name="widget_recording">Registrazione…</string>
     <string name="widget_recording_description">Registrazione in corso. Tocca per interrompere.</string>
-    <string name="appearance_open">Cambia aspetto</string>
+    <string name="app_options">Altre opzioni</string>
+    <string name="privacy_policy">Informativa sulla privacy</string>
+    <string name="privacy_policy_open_failed">Impossibile aprire l’informativa sulla privacy.</string>
     <string name="appearance_title">Aspetto</string>
     <string name="appearance_subtitle">Scegli la palette che preferisci</string>
     <string name="appearance_applies_immediately">La palette viene applicata subito all’intera app e al widget.</string>

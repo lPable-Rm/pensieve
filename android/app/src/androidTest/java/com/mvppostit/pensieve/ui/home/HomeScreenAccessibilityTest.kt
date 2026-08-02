@@ -83,6 +83,43 @@ class HomeScreenAccessibilityTest {
     }
 
     @Test
+    fun optionsMenu_exposesAppearanceAndPrivacyActions() {
+        var appearanceClicks = 0
+        var privacyClicks = 0
+
+        composeTestRule.setContent {
+            PensieveTheme {
+                HomeScreen(
+                    uiState = HomeUiState(),
+                    onAppearanceClick = { appearanceClicks += 1 },
+                    onPrivacyPolicyClick = { privacyClicks += 1 },
+                )
+            }
+        }
+
+        composeTestRule
+            .onNodeWithContentDescription(stringResource(R.string.app_options))
+            .performClick()
+        composeTestRule
+            .onNodeWithText(stringResource(R.string.appearance_title))
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule
+            .onNodeWithContentDescription(stringResource(R.string.app_options))
+            .performClick()
+        composeTestRule
+            .onNodeWithText(stringResource(R.string.privacy_policy))
+            .assertIsDisplayed()
+            .performClick()
+
+        composeTestRule.runOnIdle {
+            assertEquals(1, appearanceClicks)
+            assertEquals(1, privacyClicks)
+        }
+    }
+
+    @Test
     fun emptyState_voiceActionRemainsReachableWithLargeTextAndLittleHeight() {
         var voiceClicks = 0
 

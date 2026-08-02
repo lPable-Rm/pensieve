@@ -429,7 +429,11 @@ pendiente de verificación de Google. El nombre público será `Pramos`, el corr
 de soporte será `nolvida@pramos.dev` y se conserva definitivamente el paquete
 `com.mvppostit.pensieve`. La auditoría 11.1 terminó sin hallazgos altos o medios
 y generó únicamente una línea base AAB sin optimizar ni firmar; no se ha subido
-ningún artefacto a Google Play.
+ningún artefacto a Google Play. La política de 11.2 está publicada, su acceso
+Android está implementado y la prueba manual del enlace fue correcta, por lo que
+la subfase está completada. El usuario aplazó completar en la web la identidad
+legal y la dirección pública del responsable; sigue siendo obligatorio hacerlo
+antes de 11.6 y de cualquier envío a Google Play.
 
 ## Estado actual relevante
 
@@ -605,14 +609,22 @@ android/app/src/main/res/values-it/strings.xml
 android/app/src/main/res/values-pt-rPT/strings.xml
 localizacion/TRADUCCIONES_FASE_8.csv
 localizacion/TRADUCCIONES_FASE_9.csv
+localizacion/TRADUCCIONES_FASE_11.csv
+legal/POLITICA_PRIVACIDAD_NOLVIDA_ES.md
 ```
 
 La fase 11 está diseñada en `GUIA_FASE_11_TERRA.md` y dividida en subfases 11.0
 a 11.9. La verificación externa de 11.0 continúa pendiente y la auditoría local
-11.1 está completada: 17 tests unitarios, 30 instrumentados compilados,
-`bundleRelease`, lint y lint vital correctos, sin INTERNET ni dependencias
-inesperadas. El AAB de referencia mide 8,71 MB y está sin optimizar ni firmar;
-se reemplazará en 11.3–11.4 y no se subirá. La siguiente subfase local es 11.2.
+11.1 está completada. La implementación de 11.2 publica la política en
+`https://www.pramos.dev/nolvida/privacy` y añade un menú accesible y localizado
+que la abre mediante un `Intent` web seguro. La suite conserva 17 tests
+unitarios correctos y contiene 31 instrumentados compilados; `assembleDebug` y
+lint también terminan correctamente, sin permiso INTERNET ni dependencias
+inesperadas. La prueba manual del enlace fue correcta y 11.2 está completada.
+La identidad legal y la dirección pública del responsable quedan aplazadas como
+requisito obligatorio antes de 11.6; no deben almacenarse aquí. El AAB de
+referencia de 11.1 mide 8,71 MB y está sin optimizar ni firmar; se reemplazará
+en 11.3–11.4 y no se subirá. La siguiente subfase local es 11.3.
 
 ## Referencias de diseño
 

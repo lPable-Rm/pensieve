@@ -57,7 +57,9 @@
     <string name="widget_tap_to_speak">Zum Sprechen tippen</string>
     <string name="widget_recording">Aufnahme läuft…</string>
     <string name="widget_recording_description">Aufnahme läuft. Zum Stoppen tippen.</string>
-    <string name="appearance_open">Darstellung ändern</string>
+    <string name="app_options">Weitere Optionen</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
+    <string name="privacy_policy_open_failed">Die Datenschutzerklärung konnte nicht geöffnet werden.</string>
     <string name="appearance_title">Darstellung</string>
     <string name="appearance_subtitle">Wähle deine bevorzugte Farbpalette</string>
     <string name="appearance_applies_immediately">Die Farbpalette wird sofort in der gesamten App und im Widget angewendet.</string>

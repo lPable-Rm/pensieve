@@ -7,12 +7,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,15 +34,17 @@ import com.mvppostit.pensieve.R
 /**
  * Cabecera de la única pantalla principal.
  *
- * La única acción abre el selector de paletas que coordina MainActivity.
+ * La única acción abre un menú pequeño para apariencia y privacidad.
  */
 @Composable
 internal fun NolvidaHeader(
     modifier: Modifier = Modifier,
     onAppearanceClick: () -> Unit = {},
+    onPrivacyPolicyClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val appearanceDescription = stringResource(R.string.appearance_open)
+    val appOptionsDescription = stringResource(R.string.app_options)
+    var isOptionsMenuExpanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -82,28 +90,59 @@ internal fun NolvidaHeader(
             )
         }
 
-        IconButton(
-            onClick = onAppearanceClick,
+        Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .size(48.dp)
-                .semantics {
-                    this.contentDescription = appearanceDescription
-                },
+                .size(48.dp),
         ) {
-            Surface(
-                modifier = Modifier.size(40.dp),
-                shape = CircleShape,
-                color = colorScheme.primaryContainer,
+            IconButton(
+                onClick = { isOptionsMenuExpanded = true },
+                modifier = Modifier
+                    .size(48.dp)
+                    .semantics {
+                        this.contentDescription = appOptionsDescription
+                    },
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_palette),
-                        contentDescription = null,
-                        modifier = Modifier.size(22.dp),
-                        tint = colorScheme.onPrimaryContainer,
-                    )
+                Surface(
+                    modifier = Modifier.size(40.dp),
+                    shape = CircleShape,
+                    color = colorScheme.primaryContainer,
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_more_vert),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = colorScheme.onPrimaryContainer,
+                        )
+                    }
                 }
+            }
+
+            DropdownMenu(
+                expanded = isOptionsMenuExpanded,
+                onDismissRequest = { isOptionsMenuExpanded = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.appearance_title)) },
+                    onClick = {
+                        isOptionsMenuExpanded = false
+                        onAppearanceClick()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_palette),
+                            contentDescription = null,
+                        )
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.privacy_policy)) },
+                    onClick = {
+                        isOptionsMenuExpanded = false
+                        onPrivacyPolicyClick()
+                    },
+                )
             }
         }
     }
