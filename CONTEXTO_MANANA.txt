@@ -243,8 +243,7 @@ Fase 11 — publicación comercial
   compilados, `assembleDebug`, `bundleRelease`, lint y lint vital correctos.
   Lint conserva 0 errores y las 11 advertencias de versiones aceptadas.
 - El Manifest release no contiene INTERNET, secretos, telemetría ni
-  dependencias ajenas al diseño. El AAB de referencia mide 8,71 MB y está sin
-  optimizar ni firmar, como corresponde antes de 11.3 y 11.4; no se subirá.
+  dependencias ajenas al diseño.
 - La política está publicada en `https://www.pramos.dev/nolvida/privacy` y su
   contenido funcional fue contrastado con Nolvida. La cabecera incorpora un
   menú localizado con `Apariencia` y `Política de privacidad`; el enlace usa
@@ -254,7 +253,16 @@ Fase 11 — publicación comercial
   fallos, 31 instrumentados compilados, APK debug y lint correctos. Lint conserva
   únicamente las 11 advertencias históricas de versiones.
 - El usuario confirmó manualmente que el enlace abre la página publicada. La
-  subfase 11.2 está completada y la siguiente subfase local es 11.3.
+  subfase 11.2 está completada.
+- La subfase 11.3 activa R8 y la reducción de recursos únicamente para
+  `release` mediante el DSL estable de AGP 9.2.1. No añade la opción gradual
+  experimental ni reglas de conservación preventivas.
+- `bundleRelease` y `minifyReleaseWithR8` terminan correctamente. El AAB baja
+  de 9.136.201 a 4.299.190 bytes (52,94 %) y se genera un `mapping.txt` válido.
+  La referencia sigue sin firmar, no se subirá y será reemplazada en 11.4.
+- Tras 11.3: 17 tests unitarios correctos, 31 instrumentados compilados,
+  `assembleDebug` y `lintRelease` correctos; lint conserva 0 errores y las 11
+  advertencias de versiones aceptadas. La siguiente subfase local es 11.4.
 - El usuario aplazó completar fuera de este repositorio la identidad legal y la
   dirección pública de contacto del responsable. Sigue siendo un requisito
   obligatorio antes de 11.6 y de cualquier envío a Google Play; no guardar esos

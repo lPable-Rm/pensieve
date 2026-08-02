@@ -433,7 +433,10 @@ ningún artefacto a Google Play. La política de 11.2 está publicada, su acceso
 Android está implementado y la prueba manual del enlace fue correcta, por lo que
 la subfase está completada. El usuario aplazó completar en la web la identidad
 legal y la dirección pública del responsable; sigue siendo obligatorio hacerlo
-antes de 11.6 y de cualquier envío a Google Play.
+antes de 11.6 y de cualquier envío a Google Play. La subfase 11.3 activa R8 y
+la reducción de recursos únicamente para `release` mediante el DSL estable de
+AGP 9.2.1. El AAB optimizado se genera correctamente y continúa sin firmar; la
+firma y el artefacto publicable corresponden a 11.4.
 
 ## Estado actual relevante
 
@@ -622,9 +625,12 @@ unitarios correctos y contiene 31 instrumentados compilados; `assembleDebug` y
 lint también terminan correctamente, sin permiso INTERNET ni dependencias
 inesperadas. La prueba manual del enlace fue correcta y 11.2 está completada.
 La identidad legal y la dirección pública del responsable quedan aplazadas como
-requisito obligatorio antes de 11.6; no deben almacenarse aquí. El AAB de
-referencia de 11.1 mide 8,71 MB y está sin optimizar ni firmar; se reemplazará
-en 11.3–11.4 y no se subirá. La siguiente subfase local es 11.3.
+requisito obligatorio antes de 11.6; no deben almacenarse aquí. La subfase 11.3
+activa la minificación y la reducción de recursos solo en `release`, sin reglas
+de conservación adicionales ni opciones experimentales. El AAB baja de
+9.136.201 a 4.299.190 bytes (52,94 %), R8 genera un `mapping.txt` válido y lint
+release conserva 0 errores y 11 advertencias de versiones. Esta referencia
+permanece sin firmar y no se subirá. La siguiente subfase local es 11.4.
 
 ## Referencias de diseño
 
