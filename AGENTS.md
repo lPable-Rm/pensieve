@@ -424,6 +424,13 @@ cuatro hallazgos bajos seleccionados.
 - Pruebas en dispositivos físicos.
 - Preparación de Google Play.
 
+Estado: diseñada e iniciada. La cuenta personal de desarrollador está creada y
+pendiente de verificación de Google. El nombre público será `Pramos`, el correo
+de soporte será `nolvida@pramos.dev` y se conserva definitivamente el paquete
+`com.mvppostit.pensieve`. La auditoría 11.1 terminó sin hallazgos altos o medios
+y generó únicamente una línea base AAB sin optimizar ni firmar; no se ha subido
+ningún artefacto a Google Play.
+
 ## Estado actual relevante
 
 La aplicación compila y se ha ejecutado en un emulador Android API 36.1.
@@ -600,9 +607,12 @@ localizacion/TRADUCCIONES_FASE_8.csv
 localizacion/TRADUCCIONES_FASE_9.csv
 ```
 
-El siguiente bloque previsto es diseñar la fase 11 de publicación comercial. La
-fase 10 está cerrada, pero todavía no se ha creado el release, el AAB ni la ficha
-de Google Play.
+La fase 11 está diseñada en `GUIA_FASE_11_TERRA.md` y dividida en subfases 11.0
+a 11.9. La verificación externa de 11.0 continúa pendiente y la auditoría local
+11.1 está completada: 17 tests unitarios, 30 instrumentados compilados,
+`bundleRelease`, lint y lint vital correctos, sin INTERNET ni dependencias
+inesperadas. El AAB de referencia mide 8,71 MB y está sin optimizar ni firmar;
+se reemplazará en 11.3–11.4 y no se subirá. La siguiente subfase local es 11.2.
 
 ## Referencias de diseño
 

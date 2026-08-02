@@ -1,6 +1,6 @@
 PENSIEVE — CONTEXTO PARA RETOMAR
 
-Fecha: 1 de agosto de 2026
+Fecha: 2 de agosto de 2026
 
 Estado del proyecto
 - Fase 3 (persistencia local) está validada.
@@ -228,8 +228,21 @@ Auditoría integral 10.8
 - B-02, B-04 y B-05 son deuda baja aceptable: recuperación visual extrema del
   widget, conversión impracticable de IDs y cobertura directa adicional.
 
-Siguiente objetivo: diseñar la Fase 11
-- La fase 10 está cerrada y no requiere más correcciones.
-- Diseñar antes de implementar el proceso de publicación comercial.
-- Todavía no se ha creado el release firmado, AAB, política de privacidad,
-  declaración Data Safety ni ficha de Google Play.
+Fase 11 — publicación comercial
+- La guía principal y las subfases 11.0 a 11.9 están diseñadas.
+- La cuenta será personal, está registrada y espera la verificación de Google.
+- El desarrollador público será `Pramos` y el soporte público utilizará
+  `nolvida@pramos.dev`.
+- Se conserva definitivamente `com.mvppostit.pensieve`; no se renombrará el
+  paquete antes de publicar.
+- La verificación externa de la cuenta de 11.0 continúa pendiente. Mientras
+  Google responde, la auditoría local 11.1 se completó con 0 hallazgos altos o
+  medios y sin modificar producción.
+- La línea base termina con 17 tests unitarios correctos, 30 instrumentados
+  compilados, `assembleDebug`, `bundleRelease`, lint y lint vital correctos.
+  Lint conserva 0 errores y las 11 advertencias de versiones aceptadas.
+- El Manifest release no contiene INTERNET, secretos, telemetría ni
+  dependencias ajenas al diseño. El AAB de referencia mide 8,71 MB y está sin
+  optimizar ni firmar, como corresponde antes de 11.3 y 11.4; no se subirá.
+- La siguiente subfase local es 11.2. Todavía no existen la política pública,
+  la declaración Data Safety ni la ficha de Google Play.
