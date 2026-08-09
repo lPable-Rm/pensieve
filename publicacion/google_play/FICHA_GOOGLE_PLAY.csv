@@ -1,5 +1,5 @@
 "locale";"estado";"titulo";"caracteres_titulo";"descripcion_corta";"caracteres_descripcion_corta";"archivo_descripcion_completa";"caracteres_descripcion_completa"
-"en-US";"aprobado";"Nolvida: Voice Reminders";"24";"Voice and text reminders with visible notifications and a home screen widget.";"77";"textos/en-US.txt";"1083"
+"en-US";"aprobado";"Nolvida: Voice Reminders";"24";"Capture voice and text reminders that stay visible on your phone.";"65";"textos/en-US.txt";"1083"
 "es-ES";"aprobado";"Nolvida: Recordatorios de voz";"29";"Recordatorios de voz y texto con notificaciones visibles y widget.";"66";"textos/es-ES.txt";"1279"
 "de-DE";"aprobado";"Nolvida: Spracherinnerungen";"27";"Erinnerungen per Sprache oder Text mit sichtbaren Benachrichtigungen und Widget.";"80";"textos/de-DE.txt";"1268"
 "fr-FR";"aprobado";"Nolvida : rappels vocaux";"24";"Rappels vocaux ou écrits, notifications visibles et widget d’accueil.";"69";"textos/fr-FR.txt";"1365"
