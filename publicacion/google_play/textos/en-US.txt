@@ -1,0 +1,21 @@
+Capture a reminder before it slips away.
+
+Nolvida is a private reminder app built for quick voice and text capture. Create a reminder in seconds, then keep it visible in your notifications until you mark it Done.
+
+Capture with less friction
+
+- Write quick notes for tasks, errands, and thoughts.
+- Dictate voice reminders with on-device speech recognition.
+- Use the home screen widget to start speaking without opening Nolvida.
+- Keep each active reminder visible in the notification shade.
+- Complete reminders from the app or notification.
+- Undo an accidental completion.
+- Choose from six color palettes.
+
+Private, local, and offline
+
+Nolvida stores your notes only in private app storage on your Android device. It has no accounts, ads, analytics, cloud sync, or saved audio, and it does not require internet access.
+
+On-device speech recognition depends on the support and language models available on your Android device. Manual text entry remains available when voice recognition cannot be used.
+
+Nolvida is intentionally simple: capture a note, see the reminder, finish it.

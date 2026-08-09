@@ -1,0 +1,21 @@
+Halte eine Erinnerung fest, bevor sie dir entgeht.
+
+Nolvida ist eine private Erinnerungs-App für schnelles Erfassen per Sprache oder Text. Erstelle in Sekunden eine Erinnerung und halte sie in deinen Benachrichtigungen sichtbar, bis du sie als Erledigt markierst.
+
+Weniger Aufwand beim Erfassen
+
+- Schreibe kurze Notizen für Aufgaben, Besorgungen und Gedanken.
+- Diktiere Spracherinnerungen mit der Spracherkennung auf dem Gerät.
+- Nutze das Startbildschirm-Widget, um zu sprechen, ohne Nolvida zu öffnen.
+- Halte jede aktive Erinnerung in der Benachrichtigungsleiste sichtbar.
+- Erledige Erinnerungen in der App oder direkt in der Benachrichtigung.
+- Mache versehentliches Erledigen rückgängig.
+- Wähle aus sechs Farbpaletten.
+
+Privat, lokal und offline
+
+Nolvida speichert deine Notizen ausschließlich im privaten App-Speicher deines Android-Geräts. Es gibt keine Konten, Werbung, Analysefunktionen, Cloud-Synchronisierung oder gespeicherten Audiodateien. Eine Internetverbindung ist nicht erforderlich.
+
+Die Spracherkennung auf dem Gerät hängt von der Unterstützung und den verfügbaren Sprachmodellen deines Android-Geräts ab. Wenn sie nicht verfügbar ist, kannst du jederzeit Text eingeben.
+
+Nolvida ist bewusst einfach: Notiz erfassen, Erinnerung sehen, erledigen.

@@ -1,0 +1,21 @@
+Capturez un rappel avant qu’il ne vous échappe.
+
+Nolvida est une application privée de rappels conçue pour une saisie rapide, par la voix ou le texte. Créez un rappel en quelques secondes, puis gardez-le visible dans vos notifications jusqu’à ce que vous le marquiez comme Terminé.
+
+Capturez avec moins de friction
+
+- Écrivez des notes rapides pour vos tâches, courses et idées.
+- Dictez des rappels vocaux grâce à la reconnaissance vocale sur l’appareil.
+- Utilisez le widget d’écran d’accueil pour parler sans ouvrir Nolvida.
+- Gardez chaque rappel actif visible dans le volet des notifications.
+- Terminez des rappels depuis l’application ou la notification.
+- Annulez la validation accidentelle d’un rappel.
+- Choisissez parmi six palettes de couleurs.
+
+Privée, locale et hors ligne
+
+Nolvida stocke vos notes uniquement dans l’espace privé de l’application sur votre appareil Android. Elle ne contient ni compte, ni publicité, ni analyse d’utilisation, ni synchronisation cloud, ni audio enregistré, et ne nécessite pas de connexion Internet.
+
+La reconnaissance vocale sur l’appareil dépend de la compatibilité et des modèles linguistiques disponibles sur votre appareil Android. La saisie manuelle reste disponible lorsque la reconnaissance vocale ne peut pas être utilisée.
+
+Nolvida est volontairement simple : capturez une note, voyez le rappel, terminez-le.

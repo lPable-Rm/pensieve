@@ -1,0 +1,21 @@
+Guarda um lembrete antes que te escape.
+
+A Nolvida é uma aplicação privada de lembretes, concebida para uma captura rápida por voz ou texto. Cria um lembrete em segundos e mantém-no visível nas notificações até o marcares como Concluído.
+
+Captura com menos fricção
+
+- Escreve notas rápidas para tarefas, recados e ideias.
+- Dita lembretes por voz com reconhecimento de voz no dispositivo.
+- Usa o widget do ecrã inicial para falar sem abrir a Nolvida.
+- Mantém cada lembrete ativo visível no painel de notificações.
+- Conclui lembretes na aplicação ou na notificação.
+- Anula uma conclusão acidental.
+- Escolhe entre seis paletas de cores.
+
+Privada, local e offline
+
+A Nolvida guarda as tuas notas apenas no armazenamento privado da aplicação no dispositivo Android. Não inclui contas, publicidade, análise, sincronização na nuvem ou áudio guardado e não requer ligação à Internet.
+
+O reconhecimento de voz no dispositivo depende do suporte e dos modelos de idioma disponíveis no teu dispositivo Android. A introdução manual de texto continua disponível quando não for possível usar o reconhecimento de voz.
+
+A Nolvida é intencionalmente simples: captura uma nota, vê o lembrete e conclui-o.

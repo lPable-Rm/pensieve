@@ -1,0 +1,21 @@
+Captura un recordatorio antes de que se te olvide.
+
+Nolvida es una aplicación privada de recordatorios pensada para capturar por voz o texto con rapidez. Crea un recordatorio en segundos y mantenlo visible en tus notificaciones hasta marcarlo como Hecho.
+
+Captura con menos fricción
+
+- Escribe notas rápidas para tareas, recados e ideas.
+- Dicta recordatorios de voz mediante el reconocimiento de voz en el dispositivo.
+- Usa el widget de la pantalla de inicio para hablar sin abrir Nolvida.
+- Mantén cada recordatorio activo visible en el panel de notificaciones.
+- Completa recordatorios desde la aplicación o la notificación.
+- Si completas uno por error, deshaz la acción.
+- Elige entre seis paletas de colores.
+
+Privada, local y sin conexión
+
+Nolvida almacena tus notas únicamente en el espacio privado de la aplicación en tu dispositivo Android. No tiene cuentas, anuncios, analítica, sincronización en la nube ni audio guardado, y no necesita conexión a Internet.
+
+El reconocimiento de voz en el dispositivo depende de la compatibilidad y de los modelos de idioma disponibles en tu dispositivo Android. La entrada manual de texto sigue disponible cuando no se puede utilizar la voz.
+
+Nolvida es intencionadamente sencilla: captura una nota, ve el recordatorio y termínalo.

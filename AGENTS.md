@@ -425,9 +425,12 @@ cuatro hallazgos bajos seleccionados.
 - Preparación de Google Play.
 
 Estado: diseñada e iniciada. La cuenta personal de desarrollador está creada y
-pendiente de verificación de Google. El nombre público será `Pramos`, el correo
-de soporte será `nolvida@pramos.dev` y se conserva definitivamente el paquete
-`com.mvppostit.pensieve`. La auditoría 11.1 terminó sin hallazgos altos o medios
+verificada por Google. El nombre público será `Pramos`, el correo de soporte
+será `nolvida@pramos.dev` y se conserva definitivamente el paquete
+`com.mvppostit.pensieve`. La subfase 11.0 está completada: Play Console aceptó
+el paquete y el borrador de Nolvida está creado como aplicación de pago con
+inglés de Estados Unidos como idioma predeterminado, sin haber subido el AAB.
+La auditoría 11.1 terminó sin hallazgos altos o medios
 y generó únicamente una línea base AAB sin optimizar ni firmar; no se ha subido
 ningún artefacto a Google Play. La política de 11.2 está publicada, su acceso
 Android está implementado y la prueba manual del enlace fue correcta, por lo que
@@ -435,8 +438,11 @@ la subfase está completada. El usuario aplazó completar en la web la identidad
 legal y la dirección pública del responsable; sigue siendo obligatorio hacerlo
 antes de 11.6 y de cualquier envío a Google Play. La subfase 11.3 activa R8 y
 la reducción de recursos únicamente para `release` mediante el DSL estable de
-AGP 9.2.1. El AAB optimizado se genera correctamente y continúa sin firmar; la
-firma y el artefacto publicable corresponden a 11.4.
+AGP 9.2.1. La subfase 11.4 genera el AAB y el APK release firmados con una clave
+de subida custodiada fuera del repositorio y con copia segura confirmada. Ambos
+artefactos comparten certificado y el APK superó la prueba de humo en un Vivo
+V2130 y un Pixel 10. Play App Signing se activará con la primera subida; todavía
+no se ha enviado ningún artefacto a Google Play.
 
 ## Estado actual relevante
 
@@ -617,8 +623,11 @@ legal/POLITICA_PRIVACIDAD_NOLVIDA_ES.md
 ```
 
 La fase 11 está diseñada en `GUIA_FASE_11_TERRA.md` y dividida en subfases 11.0
-a 11.9. La verificación externa de 11.0 continúa pendiente y la auditoría local
-11.1 está completada. La implementación de 11.2 publica la política en
+a 11.9. La subfase 11.0 está completada: la identidad está verificada, Play
+Console no mostró una tarea pendiente de dispositivo, aceptó el paquete y creó
+el borrador de Nolvida como aplicación de pago. El registro automático formal
+del paquete se comprobará tras la primera subida. La auditoría local 11.1 está
+completada. La implementación de 11.2 publica la política en
 `https://www.pramos.dev/nolvida/privacy` y añade un menú accesible y localizado
 que la abre mediante un `Intent` web seguro. La suite conserva 17 tests
 unitarios correctos y contiene 31 instrumentados compilados; `assembleDebug` y
@@ -630,7 +639,15 @@ activa la minificación y la reducción de recursos solo en `release`, sin regla
 de conservación adicionales ni opciones experimentales. El AAB baja de
 9.136.201 a 4.299.190 bytes (52,94 %), R8 genera un `mapping.txt` válido y lint
 release conserva 0 errores y 11 advertencias de versiones. Esta referencia
-permanece sin firmar y no se subirá. La siguiente subfase local es 11.4.
+sin firmar no se subirá. En 11.4 se generaron fuera del repositorio el AAB y el
+APK release firmados de la versión 1.0, junto con el `mapping.txt`. Sus firmas
+son válidas, los certificados coinciden y el APK funciona en el Vivo V2130 y el
+Pixel 10. No existen secretos ni artefactos release dentro de Git. Play App
+Signing queda pendiente de la primera subida y la siguiente subfase local es
+11.5. La preparación 11.5A inventaría las afirmaciones verificables del producto
+y 11.5B mantiene una ficha maestra inglesa en revisión dentro de
+`publicacion/google_play/`; todavía no se ha cargado ningún texto ni recurso en
+Play Console.
 
 ## Referencias de diseño
 

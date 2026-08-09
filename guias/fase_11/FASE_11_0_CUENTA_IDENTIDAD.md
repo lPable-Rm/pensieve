@@ -1,6 +1,6 @@
 # Fase 11.0 — Cuenta e identidad
 
-Estado: **en curso; verificación externa pendiente**.
+Estado: **completada**.
 
 ## Objetivo
 
@@ -16,16 +16,27 @@ primer artefacto de Nolvida.
 - Identificador definitivo: `com.mvppostit.pensieve`.
 - Aplicación de pago único.
 - Cuenta registrada y tasa abonada.
+- Identidad de la cuenta verificada por Google.
 
 El correo propietario y los datos legales permanecen fuera del repositorio.
 
-## Pendientes
+## Resultado
 
-1. Esperar la confirmación de identidad de Google.
-2. Completar la verificación del dispositivo físico si Play Console la pide.
-3. Confirmar que nombre, correo y país del perfil son correctos.
-4. Registrar el paquete cuando Play Console habilite esa tarea.
-5. Crear Nolvida como borrador, sin subir todavía un AAB.
+- La identidad de la cuenta personal está verificada.
+- Play Console no mostró una tarea pendiente de verificación del dispositivo
+  al crear la aplicación. Si Google la solicita más adelante, deberá
+  completarse antes de distribuirla.
+- El perfil público muestra `Pramos`.
+- Play Console aceptó `com.mvppostit.pensieve` durante la creación.
+- El borrador de `Nolvida` está creado como aplicación de pago, con inglés de
+  Estados Unidos como idioma predeterminado.
+- Se aceptaron las declaraciones de políticas, Play App Signing y legislación
+  de exportación.
+- No se ha subido todavía ningún AAB.
+
+Google intentará registrar automáticamente el paquete para la verificación de
+desarrolladores de Android. Su estado formal se volverá a comprobar después de
+la primera subida, sin iniciar ahora un registro manual paralelo.
 
 Al crear el borrador se seleccionará aplicación, no juego, y el modelo de pago
 acordado. No se elegirá `Gratis` por error: una aplicación que ya se ha ofrecido
@@ -40,6 +51,6 @@ interna no sustituye este requisito.
 
 ## Cierre
 
-Cerrar 11.0 cuando la cuenta figure verificada, el dispositivo esté validado si
-se solicita, el paquete se acepte y el borrador de Nolvida exista. Registrar
-solo fechas y estados no sensibles.
+La subfase queda cerrada: la cuenta está verificada, no existe una solicitud
+visible de dispositivo, el paquete fue aceptado y el borrador de Nolvida existe.
+Solo se han registrado estados no sensibles.

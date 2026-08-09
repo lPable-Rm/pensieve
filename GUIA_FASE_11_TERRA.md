@@ -1,7 +1,6 @@
 # Fase 11 — Guía de publicación comercial
 
-Estado: **en curso; 11.1, 11.2 y 11.3 completadas, y 11.0 pendiente de verificación
-externa**.
+Estado: **en curso; 11.0 a 11.4 completadas y 11.5 en preparación local**.
 
 ## Objetivo
 
@@ -23,7 +22,7 @@ preparar -> comprobar -> registrar evidencia -> avanzar
 | Nombre comercial | `Nolvida` |
 | Desarrollador público | `Pramos` |
 | Tipo de cuenta | Personal y nueva |
-| Estado de la cuenta | Registrada y pendiente de verificación de Google |
+| Estado de la cuenta | Verificada por Google |
 | Correo público | `nolvida@pramos.dev` |
 | Identificador Android | `com.mvppostit.pensieve` |
 | Modelo comercial | Pago único, sin anuncios ni suscripciones |

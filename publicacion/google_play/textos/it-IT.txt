@@ -1,0 +1,21 @@
+Cattura un promemoria prima che ti sfugga.
+
+Nolvida è un’app privata per promemoria, pensata per acquisire rapidamente con voce o testo. Crea un promemoria in pochi secondi e mantienilo visibile nelle notifiche finché non lo segni come Fatto.
+
+Meno passaggi per catturare
+
+- Scrivi note rapide per attività, commissioni e pensieri.
+- Detta promemoria vocali con il riconoscimento vocale sul dispositivo.
+- Usa il widget della schermata Home per parlare senza aprire Nolvida.
+- Mantieni ogni promemoria attivo visibile nel pannello delle notifiche.
+- Completa i promemoria dall’app o dalla notifica.
+- Annulla un completamento accidentale.
+- Scegli tra sei palette di colori.
+
+Privata, locale e offline
+
+Nolvida archivia le tue note solo nello spazio privato dell’app sul dispositivo Android. Non include account, pubblicità, analisi, sincronizzazione cloud o audio salvato e non richiede una connessione Internet.
+
+Il riconoscimento vocale sul dispositivo dipende dal supporto e dai modelli linguistici disponibili sul tuo dispositivo Android. L’inserimento manuale del testo resta disponibile quando non è possibile usare il riconoscimento vocale.
+
+Nolvida è volutamente semplice: cattura una nota, vedi il promemoria, completalo.
